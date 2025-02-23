@@ -40,10 +40,10 @@ class Solicitacao:
     def incluir(self, nome, setor, id_produto, quantidade, prioridade):
         query = """
             INSERT INTO solicitacao_compras
-            (nome_solicitacao, setor_solicitacao, data_solicitacao, id_produto, quantidade_solicitacao, prioridade_solicitacao)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (nome_solicitacao, id_setor, data_solicitacao, id_produto, quantidade_solicitacao, prioridade_solicitacao, status_solicitacao)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        data = (nome, setor, datetime.now().date(), id_produto, quantidade, prioridade)
+        data = (nome, setor, datetime.now().date(), id_produto, quantidade, prioridade,'Pendente')
         self.db.execute(query, data)
 
     def buscar_produtos(self):
@@ -52,6 +52,25 @@ class Solicitacao:
 
     def buscar_setores(self):
         query = "SELECT id_setor, nome_setor FROM setores"
+        return self.db.execute(query, fetch=True)
+
+    def buscar_solicitacoes(self):
+        query = """
+            SELECT
+                sc.id_solicitacao,
+                p.nome_produto,
+                s.nome_setor,
+                sc.quantidade_solicitacao,
+                sc.prioridade_solicitacao,
+                sc.status_solicitacao,
+                sc.data_solicitacao
+            FROM
+                solicitacao_compras sc
+            JOIN
+                produtos p ON sc.id_produto = p.id_produto
+            JOIN
+            setores s ON sc.id_setor = s.id_setor
+        """
         return self.db.execute(query, fetch=True)
 
     def fechar_conexao(self):
@@ -68,17 +87,21 @@ def index():
 #Página de pedidos
 @app.route('/pedidos')
 def pedidos():
-    return render_template('pedidos.html')
+    solicitacoes = solicitacao_service.buscar_solicitacoes()
+    #formata as datas do resultado da query para o formato dd/mm/yyyy
+    for pedidos in solicitacoes:
+        pedidos['data_solicitacao'] = pedidos['data_solicitacao'].strftime("%d/%m/%Y") if pedidos['data_solicitacao'] else None
+    return render_template('pedidos.html', pedidos = solicitacoes)
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores
 @app.route('/cadastro')
 def cadastro():
     produtos = solicitacao_service.buscar_produtos()
     setores = solicitacao_service.buscar_setores()
-    print(setores)
     return render_template('cadastro.html', produtos=produtos, setores=setores)
 
 #Recebe as solicitação de compra do formulário e grava no banco
+@app.route('/recebeSolicitacao', methods=['POST'])
 def recebeSolicitacao():
     nome = request.form['nome']
     setor = request.form['setor']
