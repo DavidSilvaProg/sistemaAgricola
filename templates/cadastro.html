@@ -37,7 +37,7 @@
             <select id="setor" name="setor">
                 <option value="0"></option>
                 {% for setor in setores %}
-                <option value="{{ setor.id }}">{{ setor.nome}}</option>
+                <option value="{{ setor['id_setor'] }}">{{ setor['nome_setor']}}</option>
                 {% endfor %}
             </select>
             
@@ -45,7 +45,7 @@
 			<select id="produto" name="produto">
                 <option value="0"></option>
 				{% for produto in produtos %}
-                    <option value="{{ produto.id }}">{{ produto.nome }}</option>
+                    <option value="{{ produto['id_produto'] }}">{{ produto['nome_produto'] }}</option>
                 {% endfor %}
 			</select>
             

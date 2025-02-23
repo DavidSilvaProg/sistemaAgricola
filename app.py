@@ -6,106 +6,89 @@ from flask import Flask, request, redirect, url_for, render_template
 
 app = Flask(__name__)
 
-#redireciona para a página principal
+#gerencia a conexão com o banco de dados
+class Database:
+    def __init__(self):
+        load_dotenv()
+        self.conexao = mysql.connector.connect(
+            host = os.getenv("DB_HOST"),
+            user = os.getenv("DB_USER"),
+            password = os.getenv("DB_PASSWORD"),
+            database = os.getenv("DB_NAME")
+        )
+
+    def execute(self, query, params=None, fetch=False):
+        try:
+            cursor = self.conexao.cursor(dictionary=True)
+            cursor.execute(query, params or ())
+            if fetch:
+                return cursor.fetchall()
+            self.conexao.commit()
+        except mysql.connector.Error as e:
+            print(f"Erro no banco de dados: {e}")
+        finally:
+            cursor.close()
+
+    def close(self):
+        self.conexao.close()
+
+#manipula as operações relacionadas a solicitações
+class Solicitacao:
+    def __init__(self):
+        self.db = Database()
+
+    def incluir(self, nome, setor, id_produto, quantidade, prioridade):
+        query = """
+            INSERT INTO solicitacao_compras
+            (nome_solicitacao, setor_solicitacao, data_solicitacao, id_produto, quantidade_solicitacao, prioridade_solicitacao)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        data = (nome, setor, datetime.now().date(), id_produto, quantidade, prioridade)
+        self.db.execute(query, data)
+
+    def buscar_produtos(self):
+        query = "SELECT id_produto, nome_produto FROM produtos"
+        return self.db.execute(query, fetch=True)
+
+    def buscar_setores(self):
+        query = "SELECT id_setor, nome_setor FROM setores"
+        return self.db.execute(query, fetch=True)
+
+    def fechar_conexao(self):
+        self.db.close()
+
+solicitacao_service = Solicitacao()
+
+#Página inicial
 @app.route('/')
 def index():
-    #return render_template('index.html')
+    # return render_template('index.html')
     return redirect(url_for('pedidos'))
 
+#Página de pedidos
 @app.route('/pedidos')
 def pedidos():
     return render_template('pedidos.html')
 
+#Página de cadastro de solicitações de compras, carrega dados de produtos e setores
 @app.route('/cadastro')
 def cadastro():
-    produtos = buscar_produtos()
-    setores = buscar_setores()
+    produtos = solicitacao_service.buscar_produtos()
+    setores = solicitacao_service.buscar_setores()
+    print(setores)
     return render_template('cadastro.html', produtos=produtos, setores=setores)
 
-#quando o url chamar o action do html recebeSolicitacao ele executa a função
-@app.route('/recebeSolicitacao.py', methods=['POST'])
+#Recebe as solicitação de compra do formulário e grava no banco
 def recebeSolicitacao():
-    """
-    Recebe os dados: nome e id_produto do formulário de solicitação de compra e grava no banco de dados
-    :return:
-    """
     nome = request.form['nome']
     setor = request.form['setor']
-    idProduto = request.form['produto']
+    id_produto = request.form['produto']
     quantidade = request.form['quantidade']
     prioridade = request.form['prioridade']
-    incluiSolicitacao(nome, setor, idProduto, quantidade, prioridade)
+
+    solicitacao_service.incluir(nome, setor, id_produto, quantidade, prioridade)
     return redirect(url_for('pedidos'))
 
-def conectaBanco():
-    """
-    Conecta com o banco de dados
-    :return: conexão com o banco
-    """
-    load_dotenv()
-    conexao = mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
-    )
-    return conexao
-
-def incluiSolicitacao(nome = '',setor = '', idProduto = 0, quantidade = 0, prioridade = ''):
-    try:
-        conexao = conectaBanco()
-        cursor = conexao.cursor()
-        dia = datetime.now().date()
-        cursor.execute("""
-                   INSERT INTO solicitacao_compras
-                   (nome_solicitacao, setor_solicitacao, data_solicitacao, id_produto, quantidade_solicitacao, prioridade_solicitacao)
-                   VALUES (%s, %s, %s, %s, %s, %s)
-               """, (nome, setor, dia, idProduto, quantidade, prioridade))
-        conexao.commit()
-    except mysql.connector.Error as e:
-        print(f'Erro no banco de dados: {e}')
-        return []
-    finally:
-        cursor.close()
-        conexao.close()
-
-def buscar_produtos():
-    try:
-        conexao = conectaBanco()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT id_produto, nome_produto FROM produtos")
-        linhas = cursor.fetchall()
-        if not linhas:
-            print("Nenhum produto econtrado.")
-            return []
-        produtos = [{"id": linha[0], "nome": linha[1]} for linha in linhas]
-        return produtos
-    except mysql.connector.Error as e:
-        print(f'Erro no banco de dados: {e}')
-        return []
-    finally:
-        cursor.close()
-        conexao.close()
-
-
-def buscar_setores():
-    try:
-        conexao = conectaBanco()
-        cursor = conexao.cursor()
-        cursor.execute("SELECT * FROM setores")
-        linhas = cursor.fetchall()
-        if not linhas:
-            print(f'Nenhum setor encontrado.')
-            return []
-        setores = [{"id":linha[0], "nome":linha[1]} for linha in linhas]
-        return setores
-    except mysql.connector.Error as e:
-        print(f'Erro no banco de dados: {e}')
-        return[]
-    finally:
-        conexao.close()
-        cursor.close()
-
-
+#Executa a aplicação
 if __name__ == '__main__':
     app.run(debug=True)
