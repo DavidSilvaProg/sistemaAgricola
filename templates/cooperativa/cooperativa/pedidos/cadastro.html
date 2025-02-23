@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Solicitação de Compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro de Solicitação de Compra</h2>
+        <form id="requestForm">
+            <label for="requester">Nome do Solicitante:</label>
+            <input type="text" id="requester" required>
+            
+            <label for="sector">Setor:</label>
+            <input type="text" id="sector" required>
+            
+            <label for="product">Produto:</label>
+            <input type="text" id="product" required>
+            
+            <label for="productLink">Link do Produto:</label>
+            <input type="url" id="productLink" required>
+            
+            <label for="quantity">Quantidade:</label>
+            <input type="number" id="quantity" required>
+            
+            <label for="priority">Nível de Prioridade:</label>
+            <select id="priority" required>
+                <option value="Baixa">Baixa</option>
+                <option value="Média">Média</option>
+                <option value="Alta">Alta</option>
+            </select>
+            
+            <button type="button" onclick="submitRequest()">Enviar Solicitação</button>
+        </form>
+    </div>
+
+    <script>
+        function submitRequest() {
+            let requester = document.getElementById("requester").value;
+            let sector = document.getElementById("sector").value;
+            let product = document.getElementById("product").value;
+            let productLink = document.getElementById("productLink").value;
+            let quantity = document.getElementById("quantity").value;
+            let priority = document.getElementById("priority").value;
+            
+            if (requester && sector && product && productLink && quantity && priority) {
+                alert("Solicitação enviada com sucesso!");
+                document.getElementById("requestForm").reset();
+            } else {
+                alert("Por favor, preencha todos os campos.");
+            }
+        }
+    </script>
+</body>
+</html>
