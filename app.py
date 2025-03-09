@@ -17,13 +17,25 @@ class Database:
             database = os.getenv("DB_NAME")
         )
 
-    def execute(self, query, params=None, fetch=False):
+    def execute(self, query, params=None, fetch=False, varios=False):
         try:
             cursor = self.conexao.cursor(dictionary=True)
-            cursor.execute(query, params or ())
+
+            if varios:
+                cursor.executemany(query, params if params else [])
+                self.conexao.commit()
+                # Se precisar de todos os IDs
+                #cursor.execute("SELECT LAST_INSERT_ID()")
+                #return [row['LAST_INSERT_ID()'] for row in cursor.fetchall()]
+            else:
+                cursor.execute(query, params or ())
+
             if fetch:
                 return cursor.fetchall()
+
             self.conexao.commit()
+            return cursor.lastrowid
+
         except mysql.connector.Error as e:
             print(f"Erro no banco de dados: {e}")
         finally:
@@ -37,14 +49,25 @@ class Solicitacao:
     def __init__(self):
         self.db = Database()
 
-    def incluir(self, nome, setor, id_produto, quantidade, prioridade):
+    def incluirSolicitacao(self, nome, setor, produtos, prioridade):
+
         query = """
             INSERT INTO solicitacao_compras
-            (nome_solicitacao, id_setor, data_solicitacao, id_produto, quantidade_solicitacao, prioridade_solicitacao, status_solicitacao)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (nome_solicitacao, id_setor, data_solicitacao, prioridade_solicitacao, status_solicitacao)
+            VALUES (%s, %s, %s, %s, %s)
         """
-        data = (nome, setor, datetime.now().date(), id_produto, quantidade, prioridade,'Pendente')
-        self.db.execute(query, data)
+        data = (nome, setor, datetime.now().date(), prioridade,'Pendente')
+        ultimoId = (self.db.execute(query, data))
+        self.incluirProdutos(ultimoId, produtos)
+
+    def incluirProdutos(self, id, produtos):
+        query = """
+            INSERT INTO produtos
+            (nome_produto, quantidade_produto, id_solicitacao)
+            VALUES (%s, %s, %s)
+        """
+        data = [(produto['produto'], produto['quantidade'], id) for produto in produtos]
+        self.db.execute(query, data, varios=True)
 
     def buscar_produtos(self):
         query = "SELECT id_produto, nome_produto FROM produtos"
@@ -105,12 +128,15 @@ def cadastro():
 def recebeSolicitacao():
     nome = request.form['nome']
     setor = request.form['setor']
-    id_produto = request.form['produto']
-    quantidade = request.form['quantidade']
+    produtos = []
+    for chave, valor in request.form.items():
+        if chave.startswith('produto'):
+            numero = chave.replace('produto', '')
+            quantidade = request.form.get(f'quantidade{numero}')
+            produtos.append({'produto': valor, 'quantidade': quantidade})
     prioridade = request.form['prioridade']
-
-    solicitacao_service.incluir(nome, setor, id_produto, quantidade, prioridade)
-    return redirect(url_for('pedidos'))
+    solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade)
+    return redirect(url_for('cadastro'))
 
 #Executa a aplicação
 if __name__ == '__main__':
