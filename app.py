@@ -23,7 +23,6 @@ class Database:
 
             if varios:
                 cursor.executemany(query, params if params else [])
-                self.conexao.commit()
                 # Se precisar de todos os IDs
                 #cursor.execute("SELECT LAST_INSERT_ID()")
                 #return [row['LAST_INSERT_ID()'] for row in cursor.fetchall()]
@@ -69,32 +68,46 @@ class Solicitacao:
         data = [(produto['produto'], produto['quantidade'], id) for produto in produtos]
         self.db.execute(query, data, varios=True)
 
-    def buscar_produtos(self):
-        query = "SELECT id_produto, nome_produto FROM produtos"
-        return self.db.execute(query, fetch=True)
-
     def buscar_setores(self):
         query = "SELECT id_setor, nome_setor FROM setores"
         return self.db.execute(query, fetch=True)
 
-    def buscar_solicitacoes(self):
+    def buscar_solicitacoes(self, id=0, unica=False):
         query = """
             SELECT
                 sc.id_solicitacao,
-                p.nome_produto,
+                sc.nome_solicitacao,
                 s.nome_setor,
-                sc.quantidade_solicitacao,
                 sc.prioridade_solicitacao,
                 sc.status_solicitacao,
                 sc.data_solicitacao
             FROM
                 solicitacao_compras sc
             JOIN
-                produtos p ON sc.id_produto = p.id_produto
-            JOIN
             setores s ON sc.id_setor = s.id_setor
         """
-        return self.db.execute(query, fetch=True)
+        if unica:
+            query += "WHERE sc.id_solicitacao = %s"
+            resultado =  self.db.execute(query, (id,), fetch=True)
+        else:
+            resultado =  self.db.execute(query, fetch=True)
+
+        #formata o horario
+        for solicitacao in resultado:
+            solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao['data_solicitacao'] else None
+
+        return resultado
+
+    def buscar_produtos(self, id=0):
+        query = """
+            SELECT
+                nome_produto,
+                quantidade_produto
+            FROM
+                produtos
+            WHERE id_solicitacao = %s
+        """
+        return self.db.execute(query, (id,),  fetch=True)
 
     def fechar_conexao(self):
         self.db.close()
@@ -111,17 +124,21 @@ def index():
 @app.route('/pedidos')
 def pedidos():
     solicitacoes = solicitacao_service.buscar_solicitacoes()
-    #formata as datas do resultado da query para o formato dd/mm/yyyy
-    for pedidos in solicitacoes:
-        pedidos['data_solicitacao'] = pedidos['data_solicitacao'].strftime("%d/%m/%Y") if pedidos['data_solicitacao'] else None
     return render_template('pedidos.html', pedidos = solicitacoes)
+
+#Página de detalhes da solicitacao
+@app.route('/detalhes/<int:id>')
+def detalhes(id):
+    solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
+    produtos = solicitacao_service.buscar_produtos(id)
+    return render_template('detalhes.html', solicitacao=solicitacao, produtos=produtos)
+
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores
 @app.route('/cadastro')
 def cadastro():
-    produtos = solicitacao_service.buscar_produtos()
     setores = solicitacao_service.buscar_setores()
-    return render_template('cadastro.html', produtos=produtos, setores=setores)
+    return render_template('cadastro.html', setores=setores)
 
 #Recebe as solicitação de compra do formulário e grava no banco
 @app.route('/recebeSolicitacao', methods=['POST'])
