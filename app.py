@@ -123,7 +123,7 @@ def index():
 #Página de pedidos
 @app.route('/pedidos')
 def pedidos():
-    solicitacoes = solicitacao_service.buscar_solicitacoes()
+    solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
     return render_template('pedidos.html', pedidos = solicitacoes)
 
 #Página de detalhes da solicitacao
@@ -138,7 +138,7 @@ def detalhes(id):
 @app.route('/cadastro')
 def cadastro():
     setores = solicitacao_service.buscar_setores()
-    return render_template('cadastro.html', setores=setores)
+    return render_template('pedidos.html', setores=setores)
 
 #Recebe as solicitação de compra do formulário e grava no banco
 @app.route('/recebeSolicitacao', methods=['POST'])
