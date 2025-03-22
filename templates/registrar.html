@@ -6,6 +6,11 @@
 </head>
 <body>
     <h2>Registrar</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
     <form method="POST">
         <label>Nome:</label>
         <input type="text" name="nome" required>

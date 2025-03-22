@@ -76,30 +76,58 @@ class Solicitacao:
         return self.db.execute(query, fetch=True)
 
     def buscar_solicitacoes(self, id=0, unica=False):
-        query = """
-            SELECT
-                sc.id_solicitacao,
-                sc.nome_solicitacao,
-                s.nome_setor,
-                sc.prioridade_solicitacao,
-                sc.status_solicitacao,
-                sc.data_solicitacao
-            FROM
-                solicitacao_compras sc
-            JOIN
-            setores s ON sc.id_setor = s.id_setor
-        """
-        if unica:
-            query += "WHERE sc.id_solicitacao = %s"
-            resultado =  self.db.execute(query, (id,), fetch=True)
+        if session['nivel'] == 'administrador':
+            query = """
+                SELECT
+                    sc.id_solicitacao,
+                    sc.nome_solicitacao,
+                    s.nome_setor,
+                    sc.prioridade_solicitacao,
+                    sc.status_solicitacao,
+                    sc.data_solicitacao
+                FROM
+                    solicitacao_compras sc
+                JOIN
+                setores s ON sc.id_setor = s.id_setor
+            """
+            if unica:
+                query += "WHERE sc.id_solicitacao = %s"
+                resultado =  self.db.execute(query, (id,), fetch=True)
+            else:
+                resultado =  self.db.execute(query, fetch=True)
+
+            #formata o horario
+            for solicitacao in resultado:
+                solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao['data_solicitacao'] else None
+            return resultado
         else:
-            resultado =  self.db.execute(query, fetch=True)
+            query = """
+                            SELECT
+                                sc.id_solicitacao,
+                                sc.nome_solicitacao,
+                                s.nome_setor,
+                                sc.prioridade_solicitacao,
+                                sc.status_solicitacao,
+                                sc.data_solicitacao
+                            FROM
+                                solicitacao_compras sc
+                            JOIN
+                                setores s ON sc.id_setor = s.id_setor
+                            JOIN
+                                usuarios u ON sc.id_usuario = u.id_usuario
+                        """
+            if unica:
+                query += "WHERE sc.id_solicitacao = %s"
+                resultado = self.db.execute(query, (id,), fetch=True)
+            else:
+                query += "WHERE u.id_usuario = %s"
+                resultado = self.db.execute(query, (session["user_id"],),  fetch=True)
 
-        #formata o horario
-        for solicitacao in resultado:
-            solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao['data_solicitacao'] else None
-
-        return resultado
+            # formata o horario
+            for solicitacao in resultado:
+                solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao[
+                    'data_solicitacao'] else None
+            return resultado
 
     def buscar_produtos(self, id=0):
         query = """
@@ -120,15 +148,14 @@ class Autenticacao:
         self.db = Database()
 
     def logar(self, email, senha):
-        query = "SELECT * FROM usuarios WHERE email = %s"
+        query = "SELECT * FROM usuarios WHERE email_usuario = %s"
         usuario = self.db.execute(query, (email,), fetch=True)
-        #melhorar isso
         for usuario in usuario:
-            if usuario and check_password_hash(usuario["senha"], senha):
+            if usuario and check_password_hash(usuario["senha_usuario"], senha):
                 print(usuario)
-                session["user_id"] = usuario["id"]
-                session["user_nome"] = usuario["nome"]
-                session["nivel"] = usuario["nivel"]
+                session["user_id"] = usuario["id_usuario"]
+                session["user_nome"] = usuario["nome_usuario"]
+                session["nivel"] = usuario["nivel_usuario"]
                 return True
             else:
                 return False
@@ -139,9 +166,16 @@ class Autenticacao:
         return redirect(url_for("login"))
 
     def cadastrar_usuario(self, nome, email, senha, nivel):
-        query = 'INSERT INTO usuarios (nome, email, senha, nivel) VALUES (%s, %s, %s, %s)'
-        data = (nome, email, senha, nivel)
-        self.db.execute(query, data)
+        query = 'SELECT * FROM usuarios WHERE email = %s'
+        usuario = self.db.execute(query, (email,), fetch='True')
+        if not usuario:
+            query = 'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario, nivel_usuario) VALUES (%s, %s, %s, %s)'
+            data = (nome, email, senha, nivel)
+            self.db.execute(query, data)
+            flash("Cadastrado com sucesso!")
+        else:
+            flash("Usuário já cadastrado!", "error")
+            return render_template("registrar.html")
 
 
 solicitacao_service = Solicitacao()
@@ -153,6 +187,7 @@ def index():
     if autenticacao_service.verificar_login():
         return redirect(url_for("login"))
 
+#login de usuário
 @app.route("/login", methods=['GET','POST'])
 def login():
     if request.method == "POST":
@@ -164,16 +199,20 @@ def login():
             flash("E-mail ou senha incorretos", "error")
     return render_template("login.html")
 
+#registro de novos usuários
 @app.route('/registrar', methods=['GET', 'POST'])
 def registrar():
-    if request.method == "POST":
-        nome = request.form["nome"]
-        email = request.form["email"]
-        senha = generate_password_hash(request.form["senha"])
-        nivel = request.form['nivel']
-        autenticacao_service.cadastrar_usuario(nome, email, senha, nivel)
-        return redirect(url_for("login"))
-    return render_template("registrar.html")
+    if autenticacao_service.verificar_login():
+        if session['nivel'] == "administrador":
+            if request.method == "POST":
+                nome = request.form["nome"]
+                email = request.form["email"]
+                senha = generate_password_hash(request.form["senha"])
+                nivel = request.form['nivel']
+                autenticacao_service.cadastrar_usuario(nome, email, senha, nivel)
+            return render_template("registrar.html")
+        else:
+            return redirect(url_for('pedidos'))
 
 #Página de pedidos
 @app.route('/pedidos')
