@@ -40,6 +40,7 @@ class Database:
 
         except mysql.connector.Error as e:
             print(f"Erro no banco de dados: {e}")
+            return None
         finally:
             cursor.close()
 
@@ -76,8 +77,18 @@ class Solicitacao:
         return self.db.execute(query, fetch=True)
 
     def buscar_solicitacoes(self, id=0, unica=False):
-        if session['nivel'] == 'administrador':
-            query = """
+        condicao = "1=1"  # Começamos com uma condição sempre verdadeira
+        params = []
+
+        if session['nivel'] != 'administrador':
+            condicao = "u.id_usuario = %s"
+            params.append(session["user_id"])
+
+        if unica:
+            condicao += " AND sc.id_solicitacao = %s"
+            params.append(id)
+
+        query = f"""
                 SELECT
                     sc.id_solicitacao,
                     sc.nome_solicitacao,
@@ -87,47 +98,19 @@ class Solicitacao:
                     sc.data_solicitacao
                 FROM
                     solicitacao_compras sc
-                JOIN
-                setores s ON sc.id_setor = s.id_setor
+                JOIN setores s ON sc.id_setor = s.id_setor
+                JOIN usuarios u ON sc.id_usuario = u.id_usuario
+                WHERE {condicao}
             """
-            if unica:
-                query += "WHERE sc.id_solicitacao = %s"
-                resultado =  self.db.execute(query, (id,), fetch=True)
-            else:
-                resultado =  self.db.execute(query, fetch=True)
 
-            #formata o horario
-            for solicitacao in resultado:
-                solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao['data_solicitacao'] else None
-            return resultado
-        else:
-            query = """
-                            SELECT
-                                sc.id_solicitacao,
-                                sc.nome_solicitacao,
-                                s.nome_setor,
-                                sc.prioridade_solicitacao,
-                                sc.status_solicitacao,
-                                sc.data_solicitacao
-                            FROM
-                                solicitacao_compras sc
-                            JOIN
-                                setores s ON sc.id_setor = s.id_setor
-                            JOIN
-                                usuarios u ON sc.id_usuario = u.id_usuario
-                        """
-            if unica:
-                query += "WHERE sc.id_solicitacao = %s"
-                resultado = self.db.execute(query, (id,), fetch=True)
-            else:
-                query += "WHERE u.id_usuario = %s"
-                resultado = self.db.execute(query, (session["user_id"],),  fetch=True)
+        resultado = self.db.execute(query, params, fetch=True)
 
-            # formata o horario
-            for solicitacao in resultado:
-                solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao[
-                    'data_solicitacao'] else None
-            return resultado
+        # Formata datas
+        for solicitacao in resultado:
+            solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao[
+                'data_solicitacao'] else None
+
+        return resultado
 
     def buscar_produtos(self, id=0):
         query = """
@@ -161,13 +144,12 @@ class Autenticacao:
                 return False
 
     def verificar_login(self):
-        if "user_id" in session:
-            return True
-        return redirect(url_for("login"))
+        if "user_id" not in session:
+            return redirect(url_for("login"))
 
     def cadastrar_usuario(self, nome, email, senha, nivel):
-        query = 'SELECT * FROM usuarios WHERE email = %s'
-        usuario = self.db.execute(query, (email,), fetch='True')
+        query = 'SELECT * FROM usuarios WHERE email_usuario = %s'
+        usuario = self.db.execute(query, (email,), fetch=True)
         if not usuario:
             query = 'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario, nivel_usuario) VALUES (%s, %s, %s, %s)'
             data = (nome, email, senha, nivel)
@@ -184,8 +166,10 @@ autenticacao_service = Autenticacao()
 #Página inicial
 @app.route('/')
 def index():
-    if autenticacao_service.verificar_login():
+    if "user_id" not in session:
         return redirect(url_for("login"))
+    else:
+        return redirect(url_for("pedidos"))
 
 #login de usuário
 @app.route("/login", methods=['GET','POST'])
@@ -202,7 +186,7 @@ def login():
 #registro de novos usuários
 @app.route('/registrar', methods=['GET', 'POST'])
 def registrar():
-    if autenticacao_service.verificar_login():
+    if "user_id" in session:
         if session['nivel'] == "administrador":
             if request.method == "POST":
                 nome = request.form["nome"]
@@ -213,27 +197,44 @@ def registrar():
             return render_template("registrar.html")
         else:
             return redirect(url_for('pedidos'))
+    else:
+        return redirect(url_for("login"))
+
+#logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 
 #Página de pedidos
 @app.route('/pedidos')
 def pedidos():
-    if autenticacao_service.verificar_login():
+    if "user_id" in session:
         solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
         return render_template('pedidos.html', pedidos = solicitacoes, nome=session['user_nome'])
+    else:
+        return redirect(url_for("login"))
 
 #Página de detalhes da solicitacao
 @app.route('/detalhes/<int:id>')
 def detalhes(id):
-    solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
-    produtos = solicitacao_service.buscar_produtos(id)
-    return render_template('detalhes.html', solicitacao=solicitacao, produtos=produtos)
+    if "user_id" in session:
+        solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
+        produtos = solicitacao_service.buscar_produtos(id)
+        return render_template('detalhes.html', solicitacao=solicitacao, produtos=produtos)
+    else:
+        return redirect(url_for("login"))
 
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores
 @app.route('/cadastro')
 def cadastro():
-    setores = solicitacao_service.buscar_setores()
-    return render_template('cadastro.html', setores=setores)
+    if "user_id" in session:
+        setores = solicitacao_service.buscar_setores()
+        return render_template('cadastro.html', setores=setores)
+    else:
+        return redirect(url_for("login"))
 
 #Recebe as solicitação de compra do formulário e grava no banco
 @app.route('/recebeSolicitacao', methods=['POST'])
