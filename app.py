@@ -2,9 +2,12 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, session, flash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
+load_dotenv()
+app.secret_key = os.getenv("CHAVE_SESSION")
 
 #gerencia a conexão com o banco de dados
 class Database:
@@ -112,19 +115,72 @@ class Solicitacao:
     def fechar_conexao(self):
         self.db.close()
 
+class Autenticacao:
+    def __init__(self):
+        self.db = Database()
+
+    def logar(self, email, senha):
+        query = "SELECT * FROM usuarios WHERE email = %s"
+        usuario = self.db.execute(query, (email,), fetch=True)
+        #melhorar isso
+        for usuario in usuario:
+            if usuario and check_password_hash(usuario["senha"], senha):
+                print(usuario)
+                session["user_id"] = usuario["id"]
+                session["user_nome"] = usuario["nome"]
+                session["nivel"] = usuario["nivel"]
+                return True
+            else:
+                return False
+
+    def verificar_login(self):
+        if "user_id" in session:
+            return True
+        return redirect(url_for("login"))
+
+    def cadastrar_usuario(self, nome, email, senha, nivel):
+        query = 'INSERT INTO usuarios (nome, email, senha, nivel) VALUES (%s, %s, %s, %s)'
+        data = (nome, email, senha, nivel)
+        self.db.execute(query, data)
+
+
 solicitacao_service = Solicitacao()
+autenticacao_service = Autenticacao()
 
 #Página inicial
 @app.route('/')
 def index():
-    # return render_template('index.html')
-    return redirect(url_for('pedidos'))
+    if autenticacao_service.verificar_login():
+        return redirect(url_for("login"))
+
+@app.route("/login", methods=['GET','POST'])
+def login():
+    if request.method == "POST":
+        email = request.form["email"]
+        senha = request.form["senha"]
+        if autenticacao_service.logar(email, senha):
+            return redirect(url_for('pedidos'))
+        else:
+            flash("E-mail ou senha incorretos", "error")
+    return render_template("login.html")
+
+@app.route('/registrar', methods=['GET', 'POST'])
+def registrar():
+    if request.method == "POST":
+        nome = request.form["nome"]
+        email = request.form["email"]
+        senha = generate_password_hash(request.form["senha"])
+        nivel = request.form['nivel']
+        autenticacao_service.cadastrar_usuario(nome, email, senha, nivel)
+        return redirect(url_for("login"))
+    return render_template("registrar.html")
 
 #Página de pedidos
 @app.route('/pedidos')
 def pedidos():
-    solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
-    return render_template('pedidos.html', pedidos = solicitacoes)
+    if autenticacao_service.verificar_login():
+        solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
+        return render_template('pedidos.html', pedidos = solicitacoes, nome=session['user_nome'])
 
 #Página de detalhes da solicitacao
 @app.route('/detalhes/<int:id>')
@@ -138,7 +194,7 @@ def detalhes(id):
 @app.route('/cadastro')
 def cadastro():
     setores = solicitacao_service.buscar_setores()
-    return render_template('pedidos.html', setores=setores)
+    return render_template('cadastro.html', setores=setores)
 
 #Recebe as solicitação de compra do formulário e grava no banco
 @app.route('/recebeSolicitacao', methods=['POST'])

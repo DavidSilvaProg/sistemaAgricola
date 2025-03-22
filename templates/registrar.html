@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar</title>
+</head>
+<body>
+    <h2>Registrar</h2>
+    <form method="POST">
+        <label>Nome:</label>
+        <input type="text" name="nome" required>
+        <br>
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        <br>
+        <label>Senha:</label>
+        <input type="password" name="senha" required>
+        <br>
+        <label>Nível:</label>
+        <select name="nivel" id="nivel">
+            <option value="administrador">Administrador</option>
+            <option value="usuario">Usuário</option>
+        </select>
+        <button type="submit">Registrar</button>
+    </form>
+    <a href="{{ url_for('login') }}">Já tem conta? Faça login</a>
+</body>
+</html>
