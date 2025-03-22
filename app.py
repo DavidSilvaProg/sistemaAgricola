@@ -135,7 +135,6 @@ class Autenticacao:
         usuario = self.db.execute(query, (email,), fetch=True)
         for usuario in usuario:
             if usuario and check_password_hash(usuario["senha_usuario"], senha):
-                print(usuario)
                 session["user_id"] = usuario["id_usuario"]
                 session["user_nome"] = usuario["nome_usuario"]
                 session["nivel"] = usuario["nivel_usuario"]
