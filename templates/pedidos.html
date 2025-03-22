@@ -88,6 +88,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Nome Solicitação</th>
                     <th>Setor</th>
                     <th>Prioridade</th>
                     <th>Status</th>
@@ -100,6 +101,7 @@
                 {% for pedido in  pedidos %}
                     <tr>
                         <td>{{pedido['id_solicitacao']}}</td>
+                        <td>{{pedido['nome_solicitacao']}}</td>
                         <td>{{pedido['nome_setor']}}</td>
                         <td>{{pedido['prioridade_solicitacao']}}</td>
                         <td>{{pedido['status_solicitacao']}}</td>
