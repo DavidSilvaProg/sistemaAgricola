@@ -6,6 +6,11 @@
     <div class="container container-cadastro-solicitacao">
         {% for solicitacao in solicitacao %}
             <div class="info">
+                <strong>Nome do funcionário:</strong>
+                <span id="nome-solicitante">{{ solicitacao.nome_usuario }}</span>
+            </div>
+
+            <div class="info">
                 <strong>Nome da solicitação:</strong>
                 <span id="nome-solicitante">{{ solicitacao.nome_solicitacao }}</span>
             </div>

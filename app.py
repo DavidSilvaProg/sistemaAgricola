@@ -95,7 +95,8 @@ class Solicitacao:
                     s.nome_setor,
                     sc.prioridade_solicitacao,
                     sc.status_solicitacao,
-                    sc.data_solicitacao
+                    sc.data_solicitacao,
+                    u.nome_usuario
                 FROM
                     solicitacao_compras sc
                 JOIN setores s ON sc.id_setor = s.id_setor
@@ -213,7 +214,6 @@ def cadastrarUsuario():
 def logout():
     session.clear()
     return redirect(url_for('login'))
-
 
 #Página de solicitações de compra
 @app.route('/solicitacoesCompra')
