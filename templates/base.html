@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="~width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Pedidos{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Início</a></li>
+            <li><a href="/pedidos">Pedidos</a></li>
+            <li><a href="/usuarios">Usuários</a></li>
+            <li><a href="{{ url_for('logout') }}">Sair</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js')}}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
