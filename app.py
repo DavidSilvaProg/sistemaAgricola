@@ -156,7 +156,7 @@ class Autenticacao:
             flash("Cadastrado com sucesso!")
         else:
             flash("Usuário já cadastrado!", "error")
-            return render_template("registrar.html")
+            return render_template("cadastrarUsuario.html")
 
 
 solicitacao_service = Solicitacao()
@@ -168,7 +168,7 @@ def index():
     if "user_id" not in session:
         return redirect(url_for("login"))
     else:
-        return redirect(url_for("pedidos"))
+        return redirect(url_for("solicitacoesCompra"))
 
 #login de usuário
 @app.route("/login", methods=['GET','POST'])
@@ -177,14 +177,14 @@ def login():
         email = request.form["email"]
         senha = request.form["senha"]
         if autenticacao_service.logar(email, senha):
-            return redirect(url_for('pedidos'))
+            return redirect(url_for('solicitacoesCompra'))
         else:
             flash("E-mail ou senha incorretos", "error")
     return render_template("login.html")
 
 #registro de novos usuários
-@app.route('/registrar', methods=['GET', 'POST'])
-def registrar():
+@app.route('/cadastrarUsuario', methods=['GET', 'POST'])
+def cadastrarUsuario():
     if "user_id" in session:
         if session['nivel'] == "administrador":
             if request.method == "POST":
@@ -193,9 +193,9 @@ def registrar():
                 senha = generate_password_hash(request.form["senha"])
                 nivel = request.form['nivel']
                 autenticacao_service.cadastrar_usuario(nome, email, senha, nivel)
-            return render_template("registrar.html")
+            return render_template("cadastrarUsuario.html")
         else:
-            return redirect(url_for('pedidos'))
+            return redirect(url_for('solicitacoesCompra'))
     else:
         return redirect(url_for("login"))
 
@@ -206,32 +206,32 @@ def logout():
     return redirect(url_for('login'))
 
 
-#Página de pedidos
-@app.route('/pedidos')
-def pedidos():
+#Página de solicitações de compra
+@app.route('/solicitacoesCompra')
+def solicitacoesCompra():
     if "user_id" in session:
         solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
-        return render_template('pedidos.html', pedidos = solicitacoes, nome=session['user_nome'])
+        return render_template('solicitacoesCompra.html', pedidos = solicitacoes, nome=session['user_nome'])
     else:
         return redirect(url_for("login"))
 
 #Página de detalhes da solicitacao
-@app.route('/detalhes/<int:id>')
-def detalhes(id):
+@app.route('/detalhesSolicitacao/<int:id>')
+def detalhesSolicitacao(id):
     if "user_id" in session:
         solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
         produtos = solicitacao_service.buscar_produtos(id)
-        return render_template('detalhes.html', solicitacao=solicitacao, produtos=produtos)
+        return render_template('detalhesSolicitacao.html', solicitacao=solicitacao, produtos=produtos)
     else:
         return redirect(url_for("login"))
 
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores
-@app.route('/cadastro')
+@app.route('/cadastroSolicitacao')
 def cadastro():
     if "user_id" in session:
         setores = solicitacao_service.buscar_setores()
-        return render_template('cadastro.html', setores=setores)
+        return render_template('cadastroSolicitacao.html', setores=setores)
     else:
         return redirect(url_for("login"))
 
