@@ -52,14 +52,14 @@ class Solicitacao:
     def __init__(self):
         self.db = Database()
 
-    def incluirSolicitacao(self, nome, setor, produtos, prioridade):
+    def incluirSolicitacao(self, nome, setor, produtos, prioridade, id):
 
         query = """
             INSERT INTO solicitacao_compras
-            (nome_solicitacao, id_setor, data_solicitacao, prioridade_solicitacao, status_solicitacao)
-            VALUES (%s, %s, %s, %s, %s)
+            (nome_solicitacao, id_setor, data_solicitacao, prioridade_solicitacao, status_solicitacao, id_usuario)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """
-        data = (nome, setor, datetime.now().date(), prioridade,'Solicitado')
+        data = (nome, setor, datetime.now().date(), prioridade,'Solicitado', id)
         ultimoId = (self.db.execute(query, data))
         self.incluirProdutos(ultimoId, produtos)
 
@@ -256,7 +256,8 @@ def cadastrarSolicitacao():
             quantidade = request.form.get(f'quantidade{numero}')
             produtos.append({'produto': valor, 'quantidade': quantidade})
     prioridade = request.form['prioridade']
-    solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade)
+    id = session["user_id"]
+    solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade, id)
     return redirect(url_for('cadastroSolicitacao'))
 
 @app.route('/editarStatusSolicitacao/<int:id>', methods=['POST'])
