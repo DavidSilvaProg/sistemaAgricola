@@ -59,7 +59,7 @@ class Solicitacao:
             (nome_solicitacao, id_setor, data_solicitacao, prioridade_solicitacao, status_solicitacao)
             VALUES (%s, %s, %s, %s, %s)
         """
-        data = (nome, setor, datetime.now().date(), prioridade,'Pendente')
+        data = (nome, setor, datetime.now().date(), prioridade,'Solicitado')
         ultimoId = (self.db.execute(query, data))
         self.incluirProdutos(ultimoId, produtos)
 
@@ -125,6 +125,15 @@ class Solicitacao:
 
     def fechar_conexao(self):
         self.db.close()
+
+    def editarStatusSolicitacao(self, status, id):
+        query = """
+                    UPDATE solicitacao_compras SET status_solicitacao = %s
+                    WHERE id_solicitacao = %s
+                """
+        params = [status, id]
+        return self.db.execute(query, params)
+
 
 class Autenticacao:
     def __init__(self):
@@ -228,7 +237,7 @@ def detalhesSolicitacao(id):
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores
 @app.route('/cadastroSolicitacao')
-def cadastro():
+def cadastroSolicitacao():
     if "user_id" in session:
         setores = solicitacao_service.buscar_setores()
         return render_template('cadastroSolicitacao.html', setores=setores)
@@ -236,8 +245,8 @@ def cadastro():
         return redirect(url_for("login"))
 
 #Recebe as solicitação de compra do formulário e grava no banco
-@app.route('/recebeSolicitacao', methods=['POST'])
-def recebeSolicitacao():
+@app.route('/cadastrarSolicitacao', methods=['POST'])
+def cadastrarSolicitacao():
     nome = request.form['nome']
     setor = request.form['setor']
     produtos = []
@@ -248,7 +257,20 @@ def recebeSolicitacao():
             produtos.append({'produto': valor, 'quantidade': quantidade})
     prioridade = request.form['prioridade']
     solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade)
-    return redirect(url_for('cadastro'))
+    return redirect(url_for('cadastroSolicitacao'))
+
+@app.route('/editarStatusSolicitacao/<int:id>', methods=['POST'])
+def editarStatusSolicitacao(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            status = request.form['status']
+            solicitacao_service.editarStatusSolicitacao(status, id)
+            return redirect(url_for('solicitacoesCompra'))
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
 
 #Executa a aplicação
 if __name__ == '__main__':

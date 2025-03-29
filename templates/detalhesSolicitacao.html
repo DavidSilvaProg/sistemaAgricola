@@ -46,6 +46,26 @@
 
             </tbody>
         </table>
+        {% if session.nivel == 'administrador' %}
+            <br>
+            {% for solicitacao in solicitacao %}
+            <form id="requestForm" action='/editarStatusSolicitacao/{{ solicitacao.id_solicitacao }}' method='post'>
+            {% endfor %}
+                <label for="statusPedido">Editar Status do pedido:</label>
+                <select id="statusPedido" name='status' class="padrao-input" required>
+                    <option value="Solicitado">Solicitado</option>
+                    <option value="Em Cotação">Em Cotação</option>
+                    <option value="Em Análise">Em Análise</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Aprovado">Aprovado</option>
+                    <option value="Reprovado">Reprovado</option>
+                    <option value="Cancelado">Cancelado</option>
+                    <option value="Concluído">Concluído</option>
+                </select>
+                <button type="submit" class="btn-solicitar padrao-input">Editar</button>
+
+            </form>
+        {% endif%}
     </div>
 
 {% endblock %}
