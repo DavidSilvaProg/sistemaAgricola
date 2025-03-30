@@ -13,6 +13,7 @@
             <li><a href="/solicitacoesCompra">Pedidos</a></li>
             {% if session.nivel == 'administrador' %}
                 <li><a href="/cadastrarUsuario">Usuários</a></li>
+                <li><a href="/cadastrarSetor">Setores</a></li>
             {% endif %}
             <li><a href="{{ url_for('logout') }}">Sair</a></li>
         </ul>
