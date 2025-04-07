@@ -12,20 +12,21 @@ app.secret_key = os.getenv("CHAVE_SESSION")
 #gerencia a conexão com o banco de dados
 class Database:
     def __init__(self):
-        load_dotenv()
-        self.conexao = mysql.connector.connect(
-            host = os.getenv("DB_HOST"),
-            user = os.getenv("DB_USER"),
-            password = os.getenv("DB_PASSWORD"),
-            database = os.getenv("DB_NAME")
-        )
+        self.db_config = {
+            "host": os.getenv("DB_HOST"),
+            "user": os.getenv("DB_USER"),
+            "password": os.getenv("DB_PASSWORD"),
+            "database": os.getenv("DB_NAME")
+        }
+        self.conexao = mysql.connector.connect(**self.db_config)
+
+    def _reconectar(self):
+        self.conexao = mysql.connector.connect(**self.db_config)
 
     def execute(self, query, params=None, fetch=False, varios=False):
         cursor = None
         try:
-            try:
-                self.conexao.ping(reconnect=True, attempts=3, delay=2)
-            except:
+            if not self.conexao.is_connected():
                 self._reconectar()
             cursor = self.conexao.cursor(dictionary=True)
 
