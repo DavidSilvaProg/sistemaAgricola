@@ -21,7 +21,12 @@ class Database:
         )
 
     def execute(self, query, params=None, fetch=False, varios=False):
+        cursor = None
         try:
+            try:
+                self.conexao.ping(reconnect=True, attempts=3, delay=2)
+            except:
+                self._reconectar()
             cursor = self.conexao.cursor(dictionary=True)
 
             if varios:
@@ -39,10 +44,12 @@ class Database:
             return cursor.lastrowid
 
         except mysql.connector.Error as e:
+            self.conexao.rollback()
             print(f"Erro no banco de dados: {e}")
             return None
         finally:
-            cursor.close()
+            if cursor:
+                cursor.close()
 
     def close(self):
         self.conexao.close()
