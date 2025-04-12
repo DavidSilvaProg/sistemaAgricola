@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -12,6 +16,12 @@ body {
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px; /* ou outro valor menor que 20px */
+    }
 }
 
 .logo {
@@ -38,7 +48,7 @@ button {
     font-size: 16px;
     border-radius: 6px;
     transition: background 0.3s;
-    margin: 5px;
+    margin: 5px 0px;
 }
 
 .btn-solicitar {
@@ -123,7 +133,7 @@ nav ul li a:hover {
 }
 /* LOGIN */
 .container-login{
-    max-width: 400px;
+    max-width: 500px;
     padding: 50px;
     text-align: left;
 }
