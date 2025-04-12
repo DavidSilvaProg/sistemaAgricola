@@ -1,24 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="~width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Pedidos{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
 </head>
 <body>
-  <h2>Login</h2>
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-    <p style="color:red;">{{ message }}</p>
-    {% endfor %}
-  {% endwith %}
-  <form method="POST">
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        <br>
-        <label>Senha:</label>
-        <input type="password" name="senha" required>
-        <br>
-        <button type="submit">Entrar</button>
-    </form>
+    <div class="container container-login">
+        <h2>Login</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <label>Email:</label>
+            <input type="email" name="email" class="padrao-input" required>
+            <br>
+            <label>Senha:</label>
+            <input type="password" name="senha" class="padrao-input" required>
+            <br>
+            <button type="submit" class="btn-solicitar">Entrar</button>
+        </form>
+    </div>
 </body>
 </html>

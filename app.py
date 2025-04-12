@@ -176,6 +176,17 @@ class Autenticacao:
             flash("Usuário já cadastrado!", "error")
             return render_template("cadastrarUsuario.html")
 
+    def cadastrar_setor(self, nome):
+        query = 'SELECT * FROM setores WHERE nome_setor = %s'
+        usuario = self.db.execute(query, (nome,), fetch=True)
+        if not usuario:
+            query = 'INSERT INTO setores (nome_setor) VALUES (%s)'
+            self.db.execute(query, (nome,))
+            flash("Cadastrado com sucesso!")
+        else:
+            flash("Setore já cadastrado!", "error")
+            return render_template("cadastrarSetor.html")
+
 
 solicitacao_service = Solicitacao()
 autenticacao_service = Autenticacao()
@@ -275,6 +286,20 @@ def editarStatusSolicitacao(id):
             status = request.form['status']
             solicitacao_service.editarStatusSolicitacao(status, id)
             return redirect(url_for('solicitacoesCompra'))
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+#Página de cadastro de setores
+@app.route('/cadastrarSetor', methods=['GET', 'POST'])
+def cadastrarSetor():
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            if request.method == "POST":
+                nome = request.form["nome"]
+                autenticacao_service.cadastrar_setor(nome)
+            return render_template("cadastrarSetor.html")
         else:
             return redirect(url_for('solicitacoesCompra'))
     else:

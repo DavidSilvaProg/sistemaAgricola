@@ -1,0 +1,20 @@
+
+{% extends "base.html" %}
+{% block title %}Cadastrar Setor{% endblock %}
+{% block content %}
+    <div class="container container-cadastro-solicitacao">
+        <h2>Cadastro de Setor</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" id="nome" class="padrao-input"required>
+            <br>
+            <button type="submit" class="btn-solicitar padrao-input">Registrar</button>
+        </form>
+    </div>
+{% endblock %}
