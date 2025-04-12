@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="~width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Pedidos{% endblock %}</title>
+    <title>{% block title %}Login - Sistema de Pedidos{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
 </head>
 <body>
     <div class="container container-login">
+        <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" class="logo">
         <h2>Login</h2>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}

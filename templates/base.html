@@ -9,11 +9,11 @@
 <body>
     <nav>
         <ul>
-            <li><a href="/">Início</a></li>
+            <!--<li><a href="/">Início</a></li>-->
             <li><a href="/solicitacoesCompra">Pedidos</a></li>
             {% if session.nivel == 'administrador' %}
-                <li><a href="/cadastrarUsuario">Usuários</a></li>
-                <li><a href="/cadastrarSetor">Setores</a></li>
+                <li><a href="/usuarios">Usuários</a></li>
+                <li><a href="/setores">Setores</a></li>
             {% endif %}
             <li><a href="{{ url_for('logout') }}">Sair</a></li>
         </ul>

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Lista de Setores{% endblock %}
+{% block content %}
+    <div class="container">
+        <h2>Setores</h2>
+        <div class="btn-container">
+            <button class="btn-solicitar" onclick="novoSetor()">Novo Setor</button>
+        </div>
+        <table id="userRequests">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for setor in setores %}
+                    <tr>
+                        <td>{{setor['id_setor']}}</td>
+                        <td>{{setor['nome_setor']}}</td>
+
+                        <td>
+                            <span class="detalhes" onclick="editarSetor({{setor['id_setor']}})">Editar</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/setores.js') }}"></script>
+{% endblock %}

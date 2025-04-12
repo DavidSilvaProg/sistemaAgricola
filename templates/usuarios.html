@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Lista de Usuários{% endblock %}
+{% block content %}
+    <div class="container">
+        <h2>Usuários</h2>
+        <div class="btn-container">
+            <button class="btn-solicitar" onclick="novoUsuario()">Novo Usuário</button>
+        </div>
+        <table id="userRequests">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>E-Mail</th>
+                    <th>Nível</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in  usuarios %}
+                    <tr>
+                        <td>{{usuario['id_usuario']}}</td>
+                        <td>{{usuario['nome_usuario']}}</td>
+                        <td>{{usuario['email_usuario']}}</td>
+                        <td>{{usuario['nivel_usuario']}}</td>
+
+                        <td>
+                            <span class="detalhes" onclick="editarUsuario({{usuario['id_usuario']}})">Editar</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/usuarios.js') }}"></script>
+{% endblock %}

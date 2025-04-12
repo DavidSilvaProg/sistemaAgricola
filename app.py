@@ -121,6 +121,22 @@ class Solicitacao:
 
         return resultado
 
+    def buscar_usuarios(self):
+
+        query = f"""
+                SELECT
+                    id_usuario,
+                    nome_usuario,
+                    email_usuario,
+                    nivel_usuario
+                FROM
+                    usuarios
+            """
+
+        resultado = self.db.execute(query,  fetch=True)
+
+        return resultado
+
     def buscar_produtos(self, id=0):
         query = """
             SELECT
@@ -228,6 +244,14 @@ def cadastrarUsuario():
     else:
         return redirect(url_for("login"))
 
+@app.route('/usuarios')
+def usuarios():
+    if "user_id" in session:
+        usuarios = solicitacao_service.buscar_usuarios()[::-1] #inverte a lista
+        return render_template('usuarios.html', usuarios = usuarios, nome=session['user_nome'])
+    else:
+        return redirect(url_for("login"))
+
 #logout
 @app.route('/logout')
 def logout():
@@ -302,6 +326,14 @@ def cadastrarSetor():
             return render_template("cadastrarSetor.html")
         else:
             return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/setores')
+def setores():
+    if "user_id" in session:
+        setores = solicitacao_service.buscar_setores()[::-1] #inverte a lista
+        return render_template('setores.html', setores = setores, nome=session['user_nome'])
     else:
         return redirect(url_for("login"))
 
