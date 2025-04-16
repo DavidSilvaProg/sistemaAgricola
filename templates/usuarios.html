@@ -13,6 +13,7 @@
                     <th>Usuário</th>
                     <th>E-Mail</th>
                     <th>Nível</th>
+                    <th>Excluir</th>
                     <th>Editar</th>
                 </tr>
             </thead>
@@ -23,7 +24,9 @@
                         <td>{{usuario['nome_usuario']}}</td>
                         <td>{{usuario['email_usuario']}}</td>
                         <td>{{usuario['nivel_usuario']}}</td>
-
+                        <td>
+                            <span class="excluir" onclick="abrirModal({{usuario['id_usuario']}})">Excluir</span>
+                        </td>
                         <td>
                             <span class="detalhes" onclick="editarUsuario({{usuario['id_usuario']}})">Editar</span>
                         </td>
@@ -31,6 +34,16 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="modal" id="meuModal">
+            <div class="modal-content">
+                <p>Você tem certeza que deseja excluir este usuário?</p>
+                <div class="modal-buttons">
+                    <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                    <button class="btn-confirmar" onclick="excluirUsuario()">Sim, excluir</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 {% endblock %}
 

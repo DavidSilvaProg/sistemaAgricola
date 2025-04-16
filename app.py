@@ -159,6 +159,36 @@ class Solicitacao:
         params = [status, id]
         return self.db.execute(query, params)
 
+    def cadastrar_usuario(self, nome, email, senha, nivel):
+        query = 'SELECT * FROM usuarios WHERE email_usuario = %s'
+        usuario = self.db.execute(query, (email,), fetch=True)
+        if not usuario:
+            query = 'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario, nivel_usuario) VALUES (%s, %s, %s, %s)'
+            data = (nome, email, senha, nivel)
+            self.db.execute(query, data)
+            flash("Cadastrado com sucesso!")
+        else:
+            flash("Usuário já cadastrado!", "error")
+            return render_template("cadastrarUsuario.html")
+
+    def excluir_usuario(self, id):
+        query = 'DELETE FROM usuarios WHERE id_usuario = %s'
+        self.db.execute(query, (id,) )
+
+    def cadastrar_setor(self, nome):
+        query = 'SELECT * FROM setores WHERE nome_setor = %s'
+        usuario = self.db.execute(query, (nome,), fetch=True)
+        if not usuario:
+            query = 'INSERT INTO setores (nome_setor) VALUES (%s)'
+            self.db.execute(query, (nome,))
+            flash("Cadastrado com sucesso!")
+        else:
+            flash("Setore já cadastrado!", "error")
+            return render_template("cadastrarSetor.html")
+
+    def excluir_setor(self, id):
+        query = 'DELETE FROM setores WHERE id_setor = %s'
+        self.db.execute(query, (id,) )
 
 class Autenticacao:
     def __init__(self):
@@ -180,28 +210,7 @@ class Autenticacao:
         if "user_id" not in session:
             return redirect(url_for("login"))
 
-    def cadastrar_usuario(self, nome, email, senha, nivel):
-        query = 'SELECT * FROM usuarios WHERE email_usuario = %s'
-        usuario = self.db.execute(query, (email,), fetch=True)
-        if not usuario:
-            query = 'INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario, nivel_usuario) VALUES (%s, %s, %s, %s)'
-            data = (nome, email, senha, nivel)
-            self.db.execute(query, data)
-            flash("Cadastrado com sucesso!")
-        else:
-            flash("Usuário já cadastrado!", "error")
-            return render_template("cadastrarUsuario.html")
 
-    def cadastrar_setor(self, nome):
-        query = 'SELECT * FROM setores WHERE nome_setor = %s'
-        usuario = self.db.execute(query, (nome,), fetch=True)
-        if not usuario:
-            query = 'INSERT INTO setores (nome_setor) VALUES (%s)'
-            self.db.execute(query, (nome,))
-            flash("Cadastrado com sucesso!")
-        else:
-            flash("Setore já cadastrado!", "error")
-            return render_template("cadastrarSetor.html")
 
 
 solicitacao_service = Solicitacao()
@@ -237,8 +246,19 @@ def cadastrarUsuario():
                 email = request.form["email"]
                 senha = generate_password_hash(request.form["senha"])
                 nivel = request.form['nivel']
-                autenticacao_service.cadastrar_usuario(nome, email, senha, nivel)
+                solicitacao_service.cadastrar_usuario(nome, email, senha, nivel)
             return render_template("cadastrarUsuario.html")
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/excluirUsuario/<int:id>')
+def excluirUsuario(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            solicitacao_service.excluir_usuario(id)
+            return redirect(url_for("usuarios"))
         else:
             return redirect(url_for('solicitacoesCompra'))
     else:
@@ -322,8 +342,19 @@ def cadastrarSetor():
         if session['nivel'] == "administrador":
             if request.method == "POST":
                 nome = request.form["nome"]
-                autenticacao_service.cadastrar_setor(nome)
+                solicitacao_service.cadastrar_setor(nome)
             return render_template("cadastrarSetor.html")
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/excluirSetor/<int:id>')
+def excluirSetor(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            solicitacao_service.excluir_setor(id)
+            return redirect(url_for("setores"))
         else:
             return redirect(url_for('solicitacoesCompra'))
     else:

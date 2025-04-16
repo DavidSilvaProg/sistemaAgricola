@@ -11,6 +11,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Nome</th>
+                    <th>Excluir</th>
                     <th>Editar</th>
                 </tr>
             </thead>
@@ -19,7 +20,9 @@
                     <tr>
                         <td>{{setor['id_setor']}}</td>
                         <td>{{setor['nome_setor']}}</td>
-
+                        <td>
+                            <span class="excluir" onclick="abrirModal({{setor['id_setor']}})">Excluir</span>
+                        </td>
                         <td>
                             <span class="detalhes" onclick="editarSetor({{setor['id_setor']}})">Editar</span>
                         </td>
@@ -27,6 +30,15 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="modal" id="meuModal">
+            <div class="modal-content">
+                <p>Você tem certeza que deseja excluir este setor?</p>
+                <div class="modal-buttons">
+                    <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                    <button class="btn-confirmar" onclick="excluirSetor()">Sim, excluir</button>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
