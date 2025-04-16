@@ -32,6 +32,39 @@ body {
 }
 
 /* Pedidos */
+.input-com-icone {
+    position: relative;
+    width: 100%;
+}
+
+.input-com-icone i {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.input-com-icone input {
+    width: 100%;
+    padding: 8px 8px 8px 35px; /* Espaço para o ícone à esquerda */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+th.ordenavel {
+    cursor: pointer;
+    position: relative;
+}
+
+th.ordenavel:hover::after {
+    content: '⇅'; /* ícone de ordenação genérico */
+    font-size: 0.8em;
+    position: absolute;
+    right: 8px;
+    color: #FFFFFF;
+}
+
 .solicitacoes{
     max-width: 1200px;
 }
@@ -44,6 +77,16 @@ h2 {
     margin-bottom: 20px;
 }
 
+.esquerda-filtro{
+    text-align: left;
+}
+
+.badge-contador {
+    background-color: #eee;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+}
 button {
     padding: 12px 20px;
     border: none;
@@ -259,3 +302,5 @@ th, td {
 
 .btn-cancelar { background-color: #ccc; }
 .btn-confirmar { background-color: #e74c3c; color: white; }
+
+

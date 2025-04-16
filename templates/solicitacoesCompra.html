@@ -6,17 +6,45 @@
         <div class="btn-container">
             <button class="btn-solicitar" onclick="novaSolicitacao()">Nova Solicitação</button>
         </div>
-        <table id="userRequests">
+        <div class="filtro-container">
+            <div class="filtro-container">
+                 <div class="esquerda-filtro">
+                    <input  type="checkbox" id="ocultarCancelados" checked onchange="filtrarTabelaGeralPorId('solicitacoes')">
+                    Ocultar pedidos cancelados
+                 </div>
+
+                <div class="esquerda-filtro">
+                    <select class="padrao-input" style="width: 30%;"id="filtroStatus" onchange="filtrarTabelaGeralPorId('solicitacoes')">
+                        <option value="">Todos os status</option>
+                        <option value="Solicitado">Solicitado</option>
+                        <option value="Em Cotação">Em Cotação</option>
+                        <option value="Em Análise">Em Análise</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Reprovado">Reprovado</option>
+                        <option value="Cancelado">Cancelado</option>
+                        <option value="Concluído">Concluído</option>
+                    </select>
+                </div>
+                <div class="input-com-icone">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="filtroTabela" data-tabela="solicitacoes" placeholder="Filtrar solicitações..." onkeyup="filtrarTabelaGeral(this)" />
+                </div>
+            </div>
+            <br>
+            <span id="contagemVisivel" class="badge-contador">Mostrando <strong>0</strong> solicitações</span>
+        </div>
+        <table id="solicitacoes">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>Nome Solicitação</th>
-                    <th>Setor</th>
-                    <th>Prioridade</th>
-                    <th>Status</th>
-                    <th>Data</th>
-                    <th>Ação</th>
+                    <th class="ordenavel" data-coluna="0">ID</th>
+                    <th class="ordenavel" data-coluna="1">Usuário</th>
+                    <th class="ordenavel" data-coluna="2">Nome Solicitação</th>
+                    <th class="ordenavel" data-coluna="3">Setor</th>
+                    <th class="ordenavel" data-coluna="4">Prioridade</th>
+                    <th class="ordenavel" data-coluna="5">Status</th>
+                    <th class="ordenavel" data-coluna="6">Data</th>
+                    <th>Detalhes</th>
 
                 </tr>
             </thead>
@@ -42,4 +70,5 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/solicitacoesCompra.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
 {% endblock %}

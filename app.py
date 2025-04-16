@@ -71,18 +71,6 @@ class Solicitacao:
         ultimoId = (self.db.execute(query, data))
         self.incluirProdutos(ultimoId, produtos)
 
-    def incluirProdutos(self, id, produtos):
-        query = """
-            INSERT INTO produtos
-            (nome_produto, quantidade_produto, id_solicitacao)
-            VALUES (%s, %s, %s)
-        """
-        data = [(produto['produto'], produto['quantidade'], id) for produto in produtos]
-        self.db.execute(query, data, varios=True)
-
-    def buscar_setores(self):
-        query = "SELECT id_setor, nome_setor FROM setores"
-        return self.db.execute(query, fetch=True)
 
     def buscar_solicitacoes(self, id=0, unica=False):
         condicao = "1=1"  # Começamos com uma condição sempre verdadeira
@@ -121,6 +109,34 @@ class Solicitacao:
 
         return resultado
 
+    def editarStatusSolicitacao(self, status, id):
+        query = """
+                    UPDATE solicitacao_compras SET status_solicitacao = %s
+                    WHERE id_solicitacao = %s
+                """
+        params = [status, id]
+        return self.db.execute(query, params)
+
+    def buscar_produtos(self, id=0):
+        query = """
+            SELECT
+                nome_produto,
+                quantidade_produto
+            FROM
+                produtos
+            WHERE id_solicitacao = %s
+        """
+        return self.db.execute(query, (id,),  fetch=True)
+
+    def incluirProdutos(self, id, produtos):
+        query = """
+            INSERT INTO produtos
+            (nome_produto, quantidade_produto, id_solicitacao)
+            VALUES (%s, %s, %s)
+        """
+        data = [(produto['produto'], produto['quantidade'], id) for produto in produtos]
+        self.db.execute(query, data, varios=True)
+
     def buscar_usuarios(self):
 
         query = f"""
@@ -137,28 +153,6 @@ class Solicitacao:
 
         return resultado
 
-    def buscar_produtos(self, id=0):
-        query = """
-            SELECT
-                nome_produto,
-                quantidade_produto
-            FROM
-                produtos
-            WHERE id_solicitacao = %s
-        """
-        return self.db.execute(query, (id,),  fetch=True)
-
-    def fechar_conexao(self):
-        self.db.close()
-
-    def editarStatusSolicitacao(self, status, id):
-        query = """
-                    UPDATE solicitacao_compras SET status_solicitacao = %s
-                    WHERE id_solicitacao = %s
-                """
-        params = [status, id]
-        return self.db.execute(query, params)
-
     def cadastrar_usuario(self, nome, email, senha, nivel):
         query = 'SELECT * FROM usuarios WHERE email_usuario = %s'
         usuario = self.db.execute(query, (email,), fetch=True)
@@ -174,6 +168,10 @@ class Solicitacao:
     def excluir_usuario(self, id):
         query = 'DELETE FROM usuarios WHERE id_usuario = %s'
         self.db.execute(query, (id,) )
+
+    def buscar_setores(self):
+        query = "SELECT id_setor, nome_setor FROM setores"
+        return self.db.execute(query, fetch=True)
 
     def cadastrar_setor(self, nome):
         query = 'SELECT * FROM setores WHERE nome_setor = %s'

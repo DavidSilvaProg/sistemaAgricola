@@ -6,11 +6,17 @@
         <div class="btn-container">
             <button class="btn-solicitar" onclick="novoSetor()">Novo Setor</button>
         </div>
-        <table id="userRequests">
+        <div class="filtro-container">
+            <div class="input-com-icone">
+                <i class="fas fa-search"></i>
+                <input type="text" class="filtroTabela" data-tabela="setores" placeholder="Filtrar setores..." onkeyup="filtrarTabela(this)" />
+            </div>
+        </div>
+        <table id="setores">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
+                    <th class="ordenavel" data-coluna="0">ID</th>
+                    <th class="ordenavel" data-coluna="1"">Nome</th>
                     <th>Excluir</th>
                     <th>Editar</th>
                 </tr>
@@ -44,4 +50,5 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/setores.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
 {% endblock %}

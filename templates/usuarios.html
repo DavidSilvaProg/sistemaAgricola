@@ -6,13 +6,19 @@
         <div class="btn-container">
             <button class="btn-solicitar" onclick="novoUsuario()">Novo Usuário</button>
         </div>
-        <table id="userRequests">
+        <div class="filtro-container">
+            <div class="input-com-icone">
+                <i class="fas fa-search"></i>
+                <input type="text" class="filtroTabela" data-tabela="usuarios" placeholder="Filtrar usuários..." onkeyup="filtrarTabela(this)" />
+            </div>
+        </div>
+        <table id="usuarios">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Usuário</th>
-                    <th>E-Mail</th>
-                    <th>Nível</th>
+                    <th class="ordenavel" data-coluna="0">ID</th>
+                    <th class="ordenavel" data-coluna="1">Usuário</th>
+                    <th class="ordenavel" data-coluna="2">E-Mail</th>
+                    <th class="ordenavel" data-coluna="3">Nível</th>
                     <th>Excluir</th>
                     <th>Editar</th>
                 </tr>
@@ -49,4 +55,5 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/usuarios.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
 {% endblock %}
