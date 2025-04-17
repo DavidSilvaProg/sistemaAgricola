@@ -169,9 +169,26 @@ class Solicitacao:
         query = 'DELETE FROM usuarios WHERE id_usuario = %s'
         self.db.execute(query, (id,) )
 
-    def buscar_setores(self):
-        query = "SELECT id_setor, nome_setor FROM setores"
-        return self.db.execute(query, fetch=True)
+    def buscar_setores(self, id=0, unica=False):
+        condicao = "1=1"  # condição inicial
+        params = []
+
+        if unica and id is not None:
+            condicao += " AND id_setor = %s"
+            params.append(id)
+
+        query = f"""
+                SELECT
+                    id_setor, 
+                    nome_setor
+                FROM
+                    setores
+                WHERE {condicao}
+            """
+
+        resultado = self.db.execute(query, params, fetch=True)
+
+        return resultado
 
     def cadastrar_setor(self, nome):
         query = 'SELECT * FROM setores WHERE nome_setor = %s'
@@ -181,7 +198,19 @@ class Solicitacao:
             self.db.execute(query, (nome,))
             flash("Cadastrado com sucesso!")
         else:
-            flash("Setore já cadastrado!", "error")
+            flash("Setor já cadastrado!", "error")
+            return render_template("cadastrarSetor.html")
+
+    def editar_setor(self, id, nome):
+        query = 'SELECT * FROM setores WHERE nome_setor = %s'
+        usuario = self.db.execute(query, (nome,), fetch=True)
+        if not usuario:
+            query = 'UPDATE setores SET nome_setor = %s WHERE id_setor = %s'
+            data = (nome, id)
+            self.db.execute(query, data)
+            flash("Editado com sucesso!")
+        else:
+            flash("Setor já cadastrado!", "error")
             return render_template("cadastrarSetor.html")
 
     def excluir_setor(self, id):
@@ -341,7 +370,7 @@ def cadastrarSetor():
             if request.method == "POST":
                 nome = request.form["nome"]
                 solicitacao_service.cadastrar_setor(nome)
-            return render_template("cadastrarSetor.html")
+            return render_template("cadastrarSetor.html", setor=None, action_url=url_for('cadastrarSetor'))
         else:
             return redirect(url_for('solicitacoesCompra'))
     else:
@@ -365,6 +394,33 @@ def setores():
         return render_template('setores.html', setores = setores, nome=session['user_nome'])
     else:
         return redirect(url_for("login"))
+
+@app.route('/editarSetor/<int:id>')
+def editarSetor(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            setor_resultado = solicitacao_service.buscar_setores(id, unica=True)
+            setor = setor_resultado[0] if setor_resultado else None
+            return render_template('cadastrarSetor.html', setor=setor, action_url=url_for('gravaEditarSetor', id=id))
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/gravaEditarSetor/<int:id>', methods=['POST'])
+def gravaEditarSetor(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            if request.method == "POST":
+                nome = request.form["nome"]
+                solicitacao_service.editar_setor(id,nome)
+            return render_template("cadastrarSetor.html")
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+
 
 
 #Executa a aplicação
