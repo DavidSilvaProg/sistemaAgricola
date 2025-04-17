@@ -10,22 +10,25 @@
             <p style="color:red;">{{ message }}</p>
         {% endfor %}
         {% endwith %}
-        <form method="POST">
+        <form method="POST" action="{{ action_url }}">
             <label for="nome">Nome:</label>
-            <input type="text" name="nome" id="nome" class="padrao-input"required>
+            <input type="text" name="nome" id="nome" class="padrao-input" value="{{ usuario.nome_usuario if usuario else '' }}" required>
             <br>
             <label>Email:</label>
-            <input type="email" name="email" id="email" class="padrao-input"required>
+            <input type="email" name="email" id="email" class="padrao-input" value="{{ usuario.email_usuario if usuario else '' }}" required>
             <br>
             <label>Senha:</label>
             <input type="password" name="senha" id="senha" class="padrao-input"required>
             <br>
             <label>Nível:</label>
+            {% set is_user_selected = usuario and usuario.nivel_usuario == 'usuario' %}
             <select name="nivel" id="nivel" class="padrao-input">
                 <option value="administrador">Administrador</option>
-                <option value="usuario">Usuário</option>
+                <option value="usuario" {% if is_user_selected %}selected{% endif %}>Usuário</option>
             </select>
-            <button type="submit" class="btn-solicitar padrao-input">Registrar</button>
+            <button type="submit" class="btn-solicitar padrao-input">
+                {{ 'Salvar Alterações' if setor else 'Registrar' }}
+            </button>
         </form>
     </div>
 {% endblock %}

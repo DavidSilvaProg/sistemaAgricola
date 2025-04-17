@@ -137,20 +137,25 @@ class Solicitacao:
         data = [(produto['produto'], produto['quantidade'], id) for produto in produtos]
         self.db.execute(query, data, varios=True)
 
-    def buscar_usuarios(self):
+    def buscar_usuarios(self, id=0, unica=False):
+        condicao = "1=1"  # condição inicial
+        params = []
+
+        if unica and id is not None:
+            condicao += " AND id_usuario = %s"
+            params.append(id)
 
         query = f"""
-                SELECT
-                    id_usuario,
-                    nome_usuario,
-                    email_usuario,
-                    nivel_usuario
-                FROM
-                    usuarios
-            """
-
-        resultado = self.db.execute(query,  fetch=True)
-
+                    SELECT
+                        id_usuario,
+                        nome_usuario,
+                        email_usuario,
+                        nivel_usuario
+                    FROM
+                        usuarios
+                    WHERE {condicao}
+                """
+        resultado = self.db.execute(query, params, fetch=True)
         return resultado
 
     def cadastrar_usuario(self, nome, email, senha, nivel):
@@ -162,8 +167,30 @@ class Solicitacao:
             self.db.execute(query, data)
             flash("Cadastrado com sucesso!")
         else:
-            flash("Usuário já cadastrado!", "error")
+            flash("E-mail de usuário já cadastrado!", "error")
             return render_template("cadastrarUsuario.html")
+
+    def editar_usuario(self, id, nome, email, senha, nivel):
+        query = 'SELECT * FROM usuarios WHERE email_usuario = %s AND id_usuario != %s'
+        data = (email, id)
+        usuario = self.db.execute(query, data, fetch=True)
+        if not usuario:
+            query = """
+                        UPDATE 
+                            usuarios 
+                        SET 
+                            nome_usuario = %s, 
+                            email_usuario = %s, 
+                            senha_usuario = %s, 
+                            nivel_usuario = %s 
+                            WHERE id_usuario = %s
+                    """
+            data = (nome, email, senha, nivel, id)
+            self.db.execute(query, data)
+            flash("Editado com sucesso!")
+        else:
+            flash("E-mail de usuário já cadastrado!", "error")
+            return render_template("cadastrarSetor.html")
 
     def excluir_usuario(self, id):
         query = 'DELETE FROM usuarios WHERE id_usuario = %s'
@@ -274,7 +301,35 @@ def cadastrarUsuario():
                 senha = generate_password_hash(request.form["senha"])
                 nivel = request.form['nivel']
                 solicitacao_service.cadastrar_usuario(nome, email, senha, nivel)
+            return render_template("cadastrarUsuario.html", action_url=url_for('cadastrarUsuario'))
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/gravaEditarUsuario/<int:id>', methods=['POST'])
+def gravaEditarUsuario(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            if request.method == "POST":
+                nome = request.form["nome"]
+                email = request.form["email"]
+                senha = generate_password_hash(request.form["senha"])
+                nivel = request.form['nivel']
+                solicitacao_service.editar_usuario(id, nome, email, senha, nivel)
             return render_template("cadastrarUsuario.html")
+        else:
+            return redirect(url_for('solicitacoesCompra'))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/editarUsuario/<int:id>')
+def editarUsuario(id):
+    if "user_id" in session:
+        if session['nivel'] == "administrador":
+            usuario_resultado = solicitacao_service.buscar_usuarios(id, unica=True)
+            usuario = usuario_resultado[0] if usuario_resultado else None
+            return render_template('cadastrarUsuario.html', usuario=usuario, action_url=url_for('gravaEditarUsuario', id=id))
         else:
             return redirect(url_for('solicitacoesCompra'))
     else:
