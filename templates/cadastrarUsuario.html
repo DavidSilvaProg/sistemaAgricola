@@ -18,7 +18,16 @@
             <input type="email" name="email" id="email" class="padrao-input" value="{{ usuario.email_usuario if usuario else '' }}" required>
             <br>
             <label>Senha:</label>
-            <input type="password" name="senha" id="senha" class="padrao-input"required>
+            <div class="input-senha">
+                <input type="password" name="senha" id="senha" class="padrao-input" required>
+                <div class="toggle-password" toggle="#senha"><img src="{{ url_for('static', filename='visivel.png') }}" alt="visible"></div>
+            </div>
+            <br>
+            <label>Confirmar Senha:</label>
+            <div class="input-senha">
+                <input type="password" name="confirmar_senha" id="confirmar_senha" class="padrao-input" required>
+                <div class="toggle-password" toggle="#confirmar_senha"><img src="{{ url_for('static', filename='visivel.png') }}" alt="visible"></div>
+            </div>
             <br>
             <label>Nível:</label>
             {% set is_user_selected = usuario and usuario.nivel_usuario == 'usuario' %}
@@ -27,8 +36,12 @@
                 <option value="usuario" {% if is_user_selected %}selected{% endif %}>Usuário</option>
             </select>
             <button type="submit" class="btn-solicitar padrao-input">
-                {{ 'Salvar Alterações' if setor else 'Registrar' }}
+                {{ 'Salvar Alterações' if usuario else 'Registrar' }}
             </button>
         </form>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/cadastroUsuarios.js') }}"></script>
 {% endblock %}

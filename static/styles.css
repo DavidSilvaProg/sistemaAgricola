@@ -304,3 +304,32 @@ th, td {
 .btn-confirmar { background-color: #e74c3c; color: white; }
 
 
+.input-senha {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-senha input {
+    flex: 1;
+    padding-right: 40px; /* espaço para o botão do olho */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0;
+    height: 72%;
+    width: 42px;
+    background-color: #e0e0e0; /* cinza claro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 18px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.toggle-password img{
+    width: 20px
+}
