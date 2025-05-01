@@ -38,7 +38,7 @@ class AutenticacaoService:
             @wraps(func)
             def decorated_view(*args, **kwargs):
                 if "nivel" not in session or session["nivel"] != nivel_necessario:
-                    return redirect(url_for("solicitacao.solicitacoesCompras"))
+                    return redirect(url_for("solicitacao.solicitacoesCompra"))
                 return func(*args, **kwargs)
             return decorated_view
         return decorator
