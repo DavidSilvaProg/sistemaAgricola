@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Receber Pedido{% endblock %}
+{% block content %}
+    <h1>Receber Pedido</h1>
+
+    <div class="container container-cadastro-solicitacao">
+        {% for solicitacao in solicitacao %}
+            <div class="info">
+                <strong>Nome do funcionário:</strong>
+                <span id="nome-usuario">{{ solicitacao.nome_usuario }}</span>
+            </div>
+
+            <div class="info">
+                <strong>Nome da solicitação:</strong>
+                <span id="nome-solicitacao">{{ solicitacao.nome_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Data:</strong>
+                <span id="data">{{ solicitacao.data_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Setor:</strong>
+                <span id="setor">{{ solicitacao.nome_setor }}</span>
+            </div>
+            <div class="info">
+                <strong>Prioridade:</strong>
+                <span id="prioridade">{{ solicitacao.prioridade_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Status:</strong>
+                <span id="status">{{ solicitacao.status_solicitacao }}</span>
+            </div>
+        {% endfor %}
+        <h3>Lista de Produtos</h3>
+        <form action="{{ action_url }}" method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço (R$)</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-produtos">
+                    {% for produto in produtos %}
+                        <tr>
+                            <td><input type="text" class="padrao-input" name="produto{{ produto['id_produto'] }}" value="{{ produto['nome_produto'] }}" ></td>
+                            <td>
+                                <input type="number" class="padrao-input" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}" min="0">
+                            </td>
+                            <td>
+                                <input type="text" class="padrao-input" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}" placeholder="0.00">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <button type="submit" class="btn-receber-solicitacao padrao-input">Gravar Recebimento</button>
+        </form>
+    </div>
+
+{% endblock %}

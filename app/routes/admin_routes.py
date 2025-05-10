@@ -100,3 +100,29 @@ def gravaEditarSetor(id):
         nome = request.form["nome"]
         solicitacao_service.editar_setor(id,nome)
     return render_template("cadastrarSetor.html")
+
+#Página de receber da solicitacao
+@bp_admin.route('/receberSolicitacao/<int:id>')
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def receberSolicitacao(id):
+    solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
+    produtos = solicitacao_service.buscar_produtos(id)
+    return render_template('receberSolicitacao.html', solicitacao=solicitacao, produtos=produtos, action_url=url_for('admin.registrarRecebimentoSolicitacao', id=id))
+
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+@bp_admin.route('/registrarRecebimentoSolicitacao/<int:id>', methods=['POST'])
+def registrarRecebimentoSolicitacao(id):
+    if request.method == "POST":
+        if solicitacao_service.verificaRecebido(id):
+            produtos = []
+            for chave, valor in request.form.items():
+                if chave.startswith('produto'):
+                    numero = chave.replace('produto', '')
+                    quantidade = request.form.get(f'quantidade{numero}')
+                    preco = request.form.get(f'preco{numero}')
+                    produtos.append({'produto': valor, 'quantidade': quantidade, 'preco': preco})
+            solicitacao_service.incluirRecebimento(id,produtos)
+            solicitacao_service.editarStatusSolicitacao('Recebido', id)
+    return render_template("solicitacoesCompra.html")

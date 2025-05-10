@@ -71,6 +71,7 @@ class SolicitacaoService:
     def buscar_produtos(self, id=0):
         query = """
             SELECT
+                id_produto,
                 nome_produto,
                 quantidade_produto
             FROM
@@ -194,3 +195,37 @@ class SolicitacaoService:
     def excluir_setor(self, id):
         query = 'DELETE FROM setores WHERE id_setor = %s'
         self.db.execute(query, (id,) )
+
+    def incluirRecebimento(self, id, produtos):
+
+        query = """
+            INSERT INTO pedidos_recebidos
+            (id_solicitacao, data_recebido)
+            VALUES (%s, %s)
+        """
+        data = (id, datetime.now().date())
+        ultimoId = (self.db.execute(query, data))
+        self.incluirProdutosRecebidos(ultimoId, produtos)
+
+    def incluirProdutosRecebidos(self, id, produtos):
+        query = """
+            INSERT INTO produtos_recebidos
+            (nome_produto, quantidade_produto, id_recebido, valor_produto)
+            VALUES (%s, %s, %s, %s)
+        """
+        data = [(produto['produto'], produto['quantidade'], id, produto['preco']) for produto in produtos]
+        self.db.execute(query, data, varios=True)
+
+    def verificaRecebido(self, id):
+        query = """
+            SELECT
+                status_solicitacao
+            FROM
+                solicitacao_compras
+            WHERE id_solicitacao = %s
+        """
+        resultado = self.db.execute(query, (id,), fetch=True)
+
+        if resultado:
+            return resultado[0]['status_solicitacao'] != "Recebido"
+        return False

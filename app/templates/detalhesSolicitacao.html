@@ -7,12 +7,12 @@
         {% for solicitacao in solicitacao %}
             <div class="info">
                 <strong>Nome do funcionário:</strong>
-                <span id="nome-solicitante">{{ solicitacao.nome_usuario }}</span>
+                <span id="nome-usuario">{{ solicitacao.nome_usuario }}</span>
             </div>
 
             <div class="info">
                 <strong>Nome da solicitação:</strong>
-                <span id="nome-solicitante">{{ solicitacao.nome_solicitacao }}</span>
+                <span id="nome-solicitacao">{{ solicitacao.nome_solicitacao }}</span>
             </div>
             <div class="info">
                 <strong>Data:</strong>
@@ -57,17 +57,24 @@
             <form id="requestForm" action='/editarStatusSolicitacao/{{ solicitacao.id_solicitacao }}' method='post'>
             {% endfor %}
                 <label for="statusPedido">Editar Status do pedido:</label>
-                <select id="statusPedido" name='status' class="padrao-input" required>
+                <br>
+                <select id="statusPedido" name='status' class="padrao-input status-pedido" required>
                     <option value="Solicitado">Solicitado</option>
                     <option value="Aprovado">Aprovado</option>
                     <option value="Aguardando Entrega">Aguardando Entrega</option>
-                    <option value="Recebido">Recebido</option>
+                    <!--<option value="Recebido">Recebido</option>-->
                     <option value="Cancelado">Cancelado</option>
                 </select>
-                <button type="submit" class="btn-solicitar padrao-input">Editar</button>
-
+                <button type="submit" class="btn-editar-solicitacao padrao-input status-pedido">Mudar Status</button>
+                {% for solicitacao in solicitacao %}
+                    <button type="button" class="btn-receber-solicitacao padrao-input" onclick="receber({{solicitacao['id_solicitacao']}})">Receber</button>
+                {% endfor %}
             </form>
         {% endif%}
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/detalhesSolicitacao.js') }}"></script>
 {% endblock %}

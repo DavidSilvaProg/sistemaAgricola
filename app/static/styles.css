@@ -96,8 +96,16 @@ button {
     transition: background 0.3s;
     margin: 5px 0px;
 }
+.status-pedido{
+    width: 49.63% !important;
+}
 
-.btn-solicitar {
+.btn-editar-solicitacao {
+    background-color: #FFA500;
+    color: white;
+}
+
+.btn-receber-solicitacao, .btn-solicitar {
     background-color: #28a745;
     color: white;
 }
@@ -245,10 +253,11 @@ h1 {
 
 .info {
     margin-bottom: 20px;
+    border-bottom: 1px solid #000;
 }
 
 .info strong {
-    width: 150px;
+    width: 180px;
     display: inline-block;
 }
 
