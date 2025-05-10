@@ -14,6 +14,7 @@ function aplicarFiltros(idTabela) {
     const input = document.querySelector(`input.filtroTabela[data-tabela="${idTabela}"]`);
     const filtroTexto = input.value.toLowerCase();
     const ocultarCancelados = document.getElementById("ocultarCancelados").checked;
+    const ocultarRecebidos = document.getElementById("ocultarRecebidos").checked;
     const statusSelecionado = document.getElementById("filtroStatus").value.toLowerCase();
 
     const tabela = document.getElementById(idTabela);
@@ -23,11 +24,10 @@ function aplicarFiltros(idTabela) {
         const colunas = linhas[i].getElementsByTagName("td");
         const status = colunas[5].innerText.toLowerCase(); // coluna do status
         const ehCancelado = status.includes("cancelado");
+        const ehRecebido = status.includes("recebido");
 
-        // ❗ Primeira verificação: se o status da linha bate com o do select
         const correspondeAoStatus = statusSelecionado === "" || status === statusSelecionado;
 
-        // ❗ Segunda verificação: se bate com o texto digitado
         let correspondeAoTexto = false;
         if (correspondeAoStatus) {
             for (let j = 0; j < colunas.length; j++) {
@@ -39,11 +39,15 @@ function aplicarFiltros(idTabela) {
             }
         }
 
-        // Condição final: deve ocultar se NÃO bater com texto, OU se for cancelado e checkbox ativo
-        const deveOcultar = !correspondeAoTexto || (ocultarCancelados && ehCancelado);
+        const deveOcultar =
+            !correspondeAoTexto ||
+            (ocultarCancelados && ehCancelado) ||
+            (ocultarRecebidos && ehRecebido);
+
         linhas[i].style.display = deveOcultar ? "none" : "";
     }
-      // Atualiza a contagem de itens visíveis
+
+    // Atualiza a contagem de itens visíveis
     let visiveis = 0;
     for (let i = 1; i < linhas.length; i++) {
         if (linhas[i].style.display !== "none") {

@@ -126,4 +126,11 @@ def registrarRecebimentoSolicitacao(id):
                     produtos.append({'produto': valor, 'quantidade': quantidade, 'preco': preco})
             solicitacao_service.incluirRecebimento(id, data, produtos)
             solicitacao_service.editarStatusSolicitacao('Recebido', id)
-    return render_template("solicitacoesCompra.html")
+    return redirect(url_for("admin.solicitacoesRecebidas"))
+
+#Página de solicitações de compra
+@bp_admin.route('/solicitacoesRecebidas')
+@autenticacao_service.login_required
+def solicitacoesRecebidas():
+    recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
+    return render_template('solicitacoesRecebidas.html', recebido = recebidas)

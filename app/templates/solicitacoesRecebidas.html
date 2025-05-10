@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Lista de Recebidos{% endblock %}
+{% block content %}
+    <div class="container solicitacoes">
+        <h2>Pedidos Recebidos</h2>
+        <div class="filtro-container">
+            <div class="filtro-container">
+            </div>
+            <br>
+            <span id="contagemVisivel" class="badge-contador">Mostrando <strong>0</strong> pedidos</span>
+        </div>
+        <table id="recebidos">
+            <thead>
+                <tr>
+                    <th class="ordenavel" data-coluna="0">ID</th>
+                    <th class="ordenavel" data-coluna="1">Usuário</th>
+                    <th class="ordenavel" data-coluna="2">Nome Solicitação</th>
+                    <th class="ordenavel" data-coluna="3">Setor</th>
+                    <th class="ordenavel" data-coluna="4">Data Solicitação</th>
+                    <th class="ordenavel" data-coluna="5">Data Recebimento</th>
+                    <th>Detalhes</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for recebido in  recebido %}
+                    <tr>
+                        <td>{{recebido['id_solicitacao']}}</td>
+                        <td>{{recebido['nome_usuario']}}</td>
+                        <td>{{recebido['nome_solicitacao']}}</td>
+                        <td>{{recebido['nome_setor']}}</td>
+                        <td>{{recebido['data_solicitacao']}}</td>
+                        <td>{{recebido['data_recebido']}}</td>
+                        <td>
+                            <span class="detalhes" onclick="verDetalhes({{recebido['id_recebido']}})">Detalhes</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/solicitacoesRecebidas.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
+{% endblock %}

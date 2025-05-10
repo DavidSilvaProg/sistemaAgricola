@@ -229,3 +229,40 @@ class SolicitacaoService:
         if resultado:
             return resultado[0]['status_solicitacao'] != "Recebido"
         return False
+
+    def buscarSolicitacoesRecebidas(self, id=0, unica=False):
+        condicao = "1=1"  # Começamos com uma condição sempre verdadeira
+        params = []
+
+        if unica:
+            condicao += " AND sc.id_solicitacao = %s"
+            params.append(id)
+
+        query = f"""
+                SELECT
+                    sc.id_solicitacao,
+                    sc.nome_solicitacao,
+                    s.nome_setor,
+                    sc.prioridade_solicitacao,
+                    sc.status_solicitacao,
+                    sc.data_solicitacao,
+                    u.nome_usuario,
+                    pr.data_recebido
+                FROM
+                    solicitacao_compras sc
+                JOIN setores s ON sc.id_setor = s.id_setor
+                JOIN usuarios u ON sc.id_usuario = u.id_usuario
+                JOIN pedidos_recebidos pr ON sc.id_solicitacao = pr.id_solicitacao
+                WHERE {condicao}
+            """
+
+        resultado = self.db.execute(query, params, fetch=True)
+
+        # Formata datas
+        for solicitacao in resultado:
+            solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao[
+                'data_solicitacao'] else None
+            solicitacao['data_recebido'] = solicitacao['data_recebido'].strftime("%d/%m/%Y") if solicitacao[
+                'data_solicitacao'] else None
+
+        return resultado
