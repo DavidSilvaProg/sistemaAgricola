@@ -65,10 +65,25 @@
                     <!--<option value="Recebido">Recebido</option>-->
                     <option value="Cancelado">Cancelado</option>
                 </select>
-                <button type="submit" class="btn-editar-solicitacao padrao-input status-pedido">Mudar Status</button>
                 {% for solicitacao in solicitacao %}
-                    <button type="button" class="btn-receber-solicitacao padrao-input" onclick="receber({{solicitacao['id_solicitacao']}})">Receber</button>
+                    <button
+                        type="submit"
+                        class="btn-editar-solicitacao padrao-input status-pedido"
+                        {% if solicitacao.status_solicitacao=='Recebido' %}disabled="disabled"{% endif %}
+                    >
+                        Mudar Status
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-receber-solicitacao padrao-input"
+                        onclick="receber({{ solicitacao['id_solicitacao'] }})"
+                        {% if solicitacao.status_solicitacao=='Recebido' %}disabled="disabled"{% endif %}
+                    >
+                        Receber
+                    </button>
                 {% endfor %}
+
             </form>
         {% endif%}
     </div>

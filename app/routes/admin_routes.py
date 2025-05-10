@@ -116,6 +116,7 @@ def receberSolicitacao(id):
 def registrarRecebimentoSolicitacao(id):
     if request.method == "POST":
         if solicitacao_service.verificaRecebido(id):
+            data = request.form["data_recebimento"]
             produtos = []
             for chave, valor in request.form.items():
                 if chave.startswith('produto'):
@@ -123,6 +124,6 @@ def registrarRecebimentoSolicitacao(id):
                     quantidade = request.form.get(f'quantidade{numero}')
                     preco = request.form.get(f'preco{numero}')
                     produtos.append({'produto': valor, 'quantidade': quantidade, 'preco': preco})
-            solicitacao_service.incluirRecebimento(id,produtos)
+            solicitacao_service.incluirRecebimento(id, data, produtos)
             solicitacao_service.editarStatusSolicitacao('Recebido', id)
     return render_template("solicitacoesCompra.html")

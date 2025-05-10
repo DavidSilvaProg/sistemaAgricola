@@ -15,7 +15,7 @@
                 <span id="nome-solicitacao">{{ solicitacao.nome_solicitacao }}</span>
             </div>
             <div class="info">
-                <strong>Data:</strong>
+                <strong>Data da Solicitacao:</strong>
                 <span id="data">{{ solicitacao.data_solicitacao }}</span>
             </div>
             <div class="info">
@@ -31,8 +31,12 @@
                 <span id="status">{{ solicitacao.status_solicitacao }}</span>
             </div>
         {% endfor %}
-        <h3>Lista de Produtos</h3>
-        <form action="{{ action_url }}" method="post">
+        <form id="form-recebimento" action="{{ action_url }}" method="post">
+            <div class="info">
+                <strong>Data de Recebimento:</strong>
+                <input type="date" name="data_recebimento" class="padrao-input">
+            </div>
+            <h3>Lista de Produtos</h3>
             <table>
                 <thead>
                     <tr>
@@ -60,4 +64,7 @@
         </form>
     </div>
 
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/receberSolicitacao.js') }}"></script>
 {% endblock %}

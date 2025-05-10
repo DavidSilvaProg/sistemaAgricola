@@ -342,3 +342,16 @@ th, td {
 .toggle-password img{
     width: 20px
 }
+
+.btn-receber-solicitacao:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.status-pedido:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
