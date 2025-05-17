@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app.services.autenticacao_service import AutenticacaoService
 from app.services.solicitacao_service import SolicitacaoService
 from werkzeug.security import generate_password_hash
+from decimal import Decimal, ROUND_HALF_UP
 
 bp_admin = Blueprint('admin', __name__)
 autenticacao_service = AutenticacaoService()
@@ -146,4 +147,8 @@ def solicitacoesRecebidas():
 def detalhesSolicitacaoRecebida(id):
     solicitacao = solicitacao_service.buscarSolicitacoesRecebidas(id, unica=True)
     produtos = solicitacao_service.buscarProdutosRecebidos(id)
+    for produto in produtos:
+        produto['quantidade_produto'] = Decimal(str(produto['quantidade_produto']))
+        valor_total = produto['valor_produto'] * produto['quantidade_produto']
+        produto['valor_total'] = valor_total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     return render_template('detalhesSolicitacaoRecebida.html', solicitacao=solicitacao, produtos=produtos)
