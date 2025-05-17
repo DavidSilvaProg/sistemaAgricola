@@ -137,3 +137,13 @@ def registrarRecebimentoSolicitacao(id):
 def solicitacoesRecebidas():
     recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
     return render_template('solicitacoesRecebidas.html', recebido = recebidas)
+
+
+#Página de receber da solicitacao
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+@bp_admin.route('/detalhesSolicitacaoRecebida/<int:id>')
+def detalhesSolicitacaoRecebida(id):
+    solicitacao = solicitacao_service.buscarSolicitacoesRecebidas(id, unica=True)
+    produtos = solicitacao_service.buscarProdutosRecebidos(id)
+    return render_template('detalhesSolicitacaoRecebida.html', solicitacao=solicitacao, produtos=produtos)

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Detalhes do Pedido Recebido{% endblock %}
+{% block content %}
+    <h1>Detalhes do Pedido Recebido</h1>
+
+    <div class="container container-cadastro-solicitacao">
+        {% for solicitacao in solicitacao %}
+            <div class="info">
+                <strong>Nome do funcionário:</strong>
+                <span id="nome-usuario">{{ solicitacao.nome_usuario }}</span>
+            </div>
+
+            <div class="info">
+                <strong>Nome da solicitação:</strong>
+                <span id="nome-solicitacao">{{ solicitacao.nome_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Data Solicitação:</strong>
+                <span id="data">{{ solicitacao.data_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Data recebimento:</strong>
+                <span id="data-recebido">{{ solicitacao.data_recebido }}</span>
+            </div>
+            <div class="info">
+                <strong>Setor:</strong>
+                <span id="setor">{{ solicitacao.nome_setor }}</span>
+            </div>
+            <div class="info">
+                <strong>Status:</strong>
+                <span id="status">{{ solicitacao.status_solicitacao }}</span>
+            </div>
+            <div class="info">
+                <strong>Observação:</strong>
+                <span id="observacao">{{ solicitacao.observacao_recebido }}</span>
+            </div>
+            <div class="info">
+                <strong>Valor Frete:</strong>
+                <span id="valor-frete">R${{ solicitacao.frete_recebido }}</span>
+            </div>
+            <div class="info">
+                <strong>Valor Total:</strong>
+                <span id="valor-total">R${{ solicitacao.total_recebido }}</span>
+            </div>
+
+
+        {% endfor %}
+        <h3>Lista de Produtos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Valor Unitário (R$)</th>
+                    <th>Valor Total (R$)</th>
+
+                </tr>
+            </thead>
+            <tbody id="lista-produtos">
+
+                {% for produtos in  produtos %}
+                    <tr>
+                        <td>{{produtos['nome_produto']}}</td>
+                        <td>{{produtos['quantidade_produto']}}</td>
+                        <td>{{produtos['valor_produto']}}</td>
+                        <td>{{produtos['valor_produto'] * produtos['quantidade_produto']}}</td>
+
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+        {% if session.nivel == 'administrador' %}
+            <br>
+            {% for solicitacao in solicitacao %}
+            <form id="requestForm" action='/editarStatusSolicitacao/{{ solicitacao.id_solicitacao }}' method='post'>
+            {% endfor %}
+                <label for="statusPedido">Editar Status do pedido:</label>
+                <br>
+                <select id="statusPedido" name='status' class="padrao-input status-pedido" disabled="disabled" required>
+                    <option value="Recebido">Recebido</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+                {% for solicitacao in solicitacao %}
+                    <button
+                        type="submit"
+                        class="btn-editar-solicitacao padrao-input status-pedido"
+                        {% if solicitacao.status_solicitacao=='Recebido' %}disabled="disabled"{% endif %}
+                    >
+                        Mudar Status
+                    </button>
+                {% endfor %}
+
+            </form>
+        {% endif%}
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/detalhesSolicitacao.js') }}"></script>
+{% endblock %}

@@ -18,6 +18,7 @@
                     <th class="ordenavel" data-coluna="3">Setor</th>
                     <th class="ordenavel" data-coluna="4">Data Solicitação</th>
                     <th class="ordenavel" data-coluna="5">Data Recebimento</th>
+                    <th class="ordenavel" data-coluna="6">Valor Total (R$)</th>
                     <th>Detalhes</th>
 
                 </tr>
@@ -31,6 +32,7 @@
                         <td>{{recebido['nome_setor']}}</td>
                         <td>{{recebido['data_solicitacao']}}</td>
                         <td>{{recebido['data_recebido']}}</td>
+                        <td>{{recebido['total_recebido']}}</td>
                         <td>
                             <span class="detalhes" onclick="verDetalhes({{recebido['id_recebido']}})">Detalhes</span>
                         </td>

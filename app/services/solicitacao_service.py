@@ -235,7 +235,7 @@ class SolicitacaoService:
         params = []
 
         if unica:
-            condicao += " AND sc.id_solicitacao = %s"
+            condicao += " AND pr.id_recebido = %s"
             params.append(id)
 
         query = f"""
@@ -247,7 +247,11 @@ class SolicitacaoService:
                     sc.status_solicitacao,
                     sc.data_solicitacao,
                     u.nome_usuario,
-                    pr.data_recebido
+                    pr.id_recebido,
+                    pr.data_recebido,
+                    pr.total_recebido,
+                    pr.frete_recebido,
+                    pr.observacao_recebido
                 FROM
                     solicitacao_compras sc
                 JOIN setores s ON sc.id_setor = s.id_setor
@@ -266,3 +270,16 @@ class SolicitacaoService:
                 'data_solicitacao'] else None
 
         return resultado
+
+    def buscarProdutosRecebidos(self, id=0):
+        query = """
+            SELECT
+                id_produto,
+                nome_produto,
+                quantidade_produto,
+                valor_produto
+            FROM
+                produtos_recebidos
+            WHERE id_recebido = %s
+        """
+        return self.db.execute(query, (id,),  fetch=True)

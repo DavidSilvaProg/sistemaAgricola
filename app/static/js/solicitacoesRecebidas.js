@@ -15,5 +15,5 @@ window.onload = function () {
 
 
 function verDetalhes(id) {
-    window.location.href = `detalhesSolicitacao/${id}`;
+    window.location.href = `detalhesSolicitacaoRecebida/${id}`;
 }
