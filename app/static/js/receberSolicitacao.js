@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Converte vírgulas em pontos
-        document.querySelectorAll("input[name^='preco']").forEach(campo => {
+        document.querySelectorAll("input[name^='preco'], #valor-frete, #valor-total").forEach(campo => {
             campo.value = campo.value.replace(",", ".");
         });
     });

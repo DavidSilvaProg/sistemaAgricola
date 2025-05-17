@@ -196,14 +196,14 @@ class SolicitacaoService:
         query = 'DELETE FROM setores WHERE id_setor = %s'
         self.db.execute(query, (id,) )
 
-    def incluirRecebimento(self, id, data, produtos):
+    def incluirRecebimento(self, id, data, produtos, frete, total, observacao):
 
         query = """
             INSERT INTO pedidos_recebidos
-            (id_solicitacao, data_recebido)
-            VALUES (%s, %s)
+            (id_solicitacao, data_recebido, frete_recebido, total_recebido, observacao_recebido)
+            VALUES (%s, %s, %s, %s, %s)
         """
-        data = (id, data)
+        data = (id, data, frete, total, observacao)
         ultimoId = (self.db.execute(query, data))
         self.incluirProdutosRecebidos(ultimoId, produtos)
 
