@@ -276,6 +276,19 @@ th, td {
     text-align: left;
 }
 
+.btn-adicionar-produto{
+    background: #8FBC8F;
+}
+
+.btn-remover-produto{
+    background: #FF6347
+}
+
+.observacao-pedido {
+    resize: vertical;
+    min-height: 60px
+}
+
 /* modal */
 
 .modal {

@@ -42,7 +42,8 @@
                     <tr>
                         <th>Produto</th>
                         <th>Quantidade</th>
-                        <th>Preço (R$)</th>
+                        <th>Preço Unitário (R$)</th>
+                        <th>Excluir</th>
                     </tr>
                 </thead>
                 <tbody id="lista-produtos">
@@ -55,16 +56,39 @@
                             <td>
                                 <input type="text" class="padrao-input" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}" placeholder="0.00">
                             </td>
+                            <td>
+                                <button type="button" class="btn-remover-produto">x</button>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <button type="button" id="adicionar-produto" class="btn-adicionar-produto padrao-input">
+                + Adicionar Produto
+            </button>
+            <div>
+                <strong>Valor Frete (R$):</strong>
+                <input type="text" name="valor_frete" id="valor-frete" class="padrao-input" placeholder="0.00">
+            </div>
             <br>
+            <div>
+                <strong>Valor Total do Pedido (R$):</strong>
+                <input type="text" name="valor_total" id="valor-total" class="padrao-input" placeholder="0.00">
+            </div>
+            <br>
+            <div>
+                <strong>Observações:</strong>
+                <textarea type="text" name="observacao" id="observacao" class="padrao-input observacao-pedido"></textarea>
+            </div>
             <button type="submit" class="btn-receber-solicitacao padrao-input">Gravar Recebimento</button>
         </form>
     </div>
 
 {% endblock %}
 {% block scripts %}
+    <script>
+        const contadorProdutoInicial = {{ produtos | map(attribute='id_produto') | max if produtos else 0 }};
+    </script>
+
     <script src="{{ url_for('static', filename='js/receberSolicitacao.js') }}"></script>
 {% endblock %}
