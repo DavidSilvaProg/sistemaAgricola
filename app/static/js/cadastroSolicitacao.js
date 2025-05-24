@@ -1,41 +1,49 @@
 let contador = 1;
 
+document.addEventListener('DOMContentLoaded', () => {
+    aplicarConversaoCampos(); // Aplica aos campos iniciais
+});
+
 function adicionarInput() {
     contador = parseInt(getUltimoId()) + 1;
 
     const container = document.createElement('div');
     container.innerHTML = `
         <label for="produto${contador}">Produto ${contador}:</label>
-		<input type="text" id="produto${contador}" name="produto${contador}" class="produto" required>
+        <input type="text" id="produto${contador}" name="produto${contador}" class="produto" required>
         <label for="quantidade${contador}">Quantidade:</label>
-        <input type="number" id="quantidade${contador}" name='quantidade${contador}' class="quantidade" min="1" required>
+        <input type="text" id="quantidade${contador}" name="quantidade${contador}" class="quantidade" min="1" required>
         <button type="button" class="btn-remover" onclick="removerInput(this)">❌ Remover</button>
     `;
 
     document.getElementById('inputsContainer').appendChild(container);
+    aplicarConversaoCampos(); // Aplica conversão ao novo campo
 }
-function removerInput(botao){
+
+function removerInput(botao) {
     botao.parentNode.remove();
     contador--;
 }
 
 function getUltimoId() {
     const inputs = document.querySelectorAll('#inputsContainer input[type="text"]');
-        if (inputs.length >0) {
-            const ultimoInput = inputs[inputs.length - 1];
-            let ultimoCaracter = 0;
+    if (inputs.length > 0) {
+        const ultimoInput = inputs[inputs.length - 1];
+        const id = ultimoInput.id;
+        const numero = id.replace(/\D/g, ''); // Remove tudo que não for número
+        return numero;
+    }
+    return 1;
+}
 
-            if (ultimoInput.id.length <= 8) {
-                ultimoCaracter = ultimoInput.id.substr(-1);
-            }
-            else if (ultimoInput.id.length  == 9){
-                ultimoCaracter = ultimoInput.id.substr(-2);
-            }
-            else if (ultimoInput.id.length  == 10){
-                ultimoCaracter = ultimoInput.id.substr(-3);
-            }
+function aplicarConversaoCampos() {
+    document.querySelectorAll("input[name^='quantidade']").forEach(campo => {
+        campo.removeEventListener('input', tratarVirgula); // Evita duplicação
+        campo.addEventListener('input', tratarVirgula);
+    });
+}
 
-            return ultimoCaracter;
-        }
-    return null;
+function tratarVirgula(event) {
+    const campo = event.target;
+    campo.value = campo.value.replace(",", ".");
 }
