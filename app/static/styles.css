@@ -372,7 +372,7 @@ nav ul li a:hover {
 
 /* Container do menu */
 .header-container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 15px 30px;
   display: flex;
