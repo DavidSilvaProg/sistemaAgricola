@@ -9,15 +9,15 @@
         <div class="filtro-container">
             <div class="filtro-container">
                 <div class="esquerda-filtro">
-                    <input type="checkbox" id="ocultarCancelados" checked onchange="filtrarTabelaGeralPorId()">
+                    <input type="checkbox" id="ocultarCancelados" checked onchange="debounce(filtrarTabelaGeralPorId())">
                     <label for="ocultarCancelados">Ocultar pedidos Cancelados</label>
                 </div>
                 <div class="esquerda-filtro">
-                    <input type="checkbox" id="ocultarRecebidos" checked onchange="filtrarTabelaGeralPorId()">
+                    <input type="checkbox" id="ocultarRecebidos" checked onchange="debounce(filtrarTabelaGeralPorId())">
                     <label for="ocultarRecebidos">Ocultar pedidos Recebidos</label>
                 </div>
                 <div class="esquerda-filtro">
-                    <select class="padrao-input" style="width: 30%;" id="filtroStatus" onchange="filtrarTabelaGeralPorId()">
+                    <select class="padrao-input" style="width: 30%;" id="filtroStatus" onchange="debounce(filtrarTabelaGeralPorId())">
                         <option value="">Todos os status</option>
                         <option value="Solicitado">Solicitado</option>
                         <option value="Aprovado">Aprovado</option>
@@ -29,12 +29,13 @@
 
                 <div class="input-com-icone">
                     <i class="fas fa-search"></i>
-                    <input type="text" class="filtroTabela" id="textoBusca" placeholder="Filtrar solicitações..." onkeyup="filtrarTabelaGeralPorId()" />
-                </div><div class="filtro-data">
+                    <input type="text" class="filtroTabela" id="textoBusca" placeholder="Filtrar solicitações..." onkeyup="debounce(filtrarTabelaGeralPorId())" />
+                </div>
+                <div class="filtro-data">
                     <label for="dataInicio">Início:</label>
-                    <input type="date" class="padrao-input" id="dataInicio" onchange="filtrarTabelaGeralPorId()">
+                    <input type="date" class="padrao-input" id="dataInicio" onchange="debounce(filtrarTabelaGeralPorId())">
                     <label for="dataFim">Fim:</label>
-                    <input type="date" class="padrao-input" id="dataFim" onchange="filtrarTabelaGeralPorId()">
+                    <input type="date" class="padrao-input" id="dataFim" onchange="debounce(filtrarTabelaGeralPorId())">
                 </div>
             </div>
             <br>

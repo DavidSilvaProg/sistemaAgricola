@@ -4,7 +4,11 @@
     <div class="container solicitacoes">
         <h2>Pedidos Recebidos</h2>
         <div class="filtro-container">
-            <div class="filtro-container">
+            <div class="filtro-data">
+                <label for="dataInicio">Início:</label>
+                <input type="date" class="padrao-input" id="dataInicio" onchange="debounce(filtrarRecebidosPorData())">
+                <label for="dataFim">Fim:</label>
+                <input type="date" class="padrao-input" id="dataFim" onchange="debounce(filtrarRecebidosPorData())">
             </div>
             <br>
             <span id="contagemVisivel" class="badge-contador">Mostrando <strong>0</strong> pedidos</span>

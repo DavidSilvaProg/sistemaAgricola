@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from app.services.autenticacao_service import AutenticacaoService
 from app.services.solicitacao_service import SolicitacaoService
 from werkzeug.security import generate_password_hash
@@ -152,3 +152,13 @@ def detalhesSolicitacaoRecebida(id):
         valor_total = produto['valor_produto'] * produto['quantidade_produto']
         produto['valor_total'] = valor_total.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     return render_template('detalhesSolicitacaoRecebida.html', solicitacao=solicitacao, produtos=produtos)
+
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+@bp_admin.route('/api/recebidos')
+def api_recebidos():
+    data_inicio = request.args.get('data_inicio')
+    data_fim = request.args.get('data_fim')
+
+    dados = solicitacao_service.buscarSolicitacoesRecebidas(data_inicio=data_inicio, data_fim=data_fim)
+    return jsonify(dados)
