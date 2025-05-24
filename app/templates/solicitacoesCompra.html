@@ -7,7 +7,6 @@
             <button class="btn-solicitar" onclick="novaSolicitacao()">Nova Solicitação</button>
         </div>
         <div class="filtro-container">
-            <div class="filtro-container">
                 <div class="esquerda-filtro">
                     <input type="checkbox" id="ocultarCancelados" checked onchange="debounce(filtrarTabelaGeralPorId())">
                     <label for="ocultarCancelados">Ocultar pedidos Cancelados</label>
@@ -37,7 +36,6 @@
                     <label for="dataFim">Fim:</label>
                     <input type="date" class="padrao-input" id="dataFim" onchange="debounce(filtrarTabelaGeralPorId())">
                 </div>
-            </div>
             <br>
             <span id="contagemVisivel" class="badge-contador">Mostrando <strong>0</strong> solicitações</span>
         </div>

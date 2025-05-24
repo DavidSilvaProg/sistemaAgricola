@@ -2,29 +2,38 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="~width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema de Pedidos{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <nav>
-        <ul>
-            <!--<li><a href="/">Início</a></li>-->
-            <li><a href="/solicitacoesCompra">Pedidos</a></li>
-            {% if session.nivel == 'administrador' %}
-                <li><a href="/solicitacoesRecebidas">Recebidos</a></li>
-                <li><a href="/usuarios">Usuários</a></li>
-                <li><a href="/setores">Setores</a></li>
-            {% endif %}
-            <li><a href="{{ url_for('auth.logout') }}">Sair</a></li>
-        </ul>
-    </nav>
+    <header class="top-header">
+        <div class="header-container">
+            <div>
+                <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" height="60">
+            </div>
+
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+            <nav class="menu" id="menu">
+                <a href="/solicitacoesCompra">Pedidos</a></li>
+                {% if session.nivel == 'administrador' %}
+                    <a href="/solicitacoesRecebidas">Recebidos</a>
+                    <a href="/usuarios">Usuários</a>
+                    <a href="/setores">Setores</a>
+                {% endif %}
+            </nav>
+                <a href="{{ url_for('auth.logout') }}" class="login-btn">Sair</a>
+        </div>
+    </header>
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 
+
+    {% block scripts %}
+    {% endblock %}
     <script src="{{ url_for('static', filename='js/script.js')}}"></script>
-    {% block scripts %}{% endblock %}
 </body>
 </html>
