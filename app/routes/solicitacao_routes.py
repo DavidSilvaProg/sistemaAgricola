@@ -18,10 +18,7 @@ def index():
 @bp_solicitacao.route('/solicitacoesCompra')
 @autenticacao_service.login_required
 def solicitacoesCompra():
-    hoje = date.today()
-    um_mes_atras = hoje - relativedelta(months=1)
-
-    solicitacoes = solicitacao_service.buscar_solicitacoes(data_inicio=um_mes_atras, ocultar_recebidos=True, ocultar_cancelados=True)[::-1] #inverte a lista
+    solicitacoes = solicitacao_service.buscar_solicitacoes(ocultar_recebidos=True, ocultar_cancelados=True)[::-1] #inverte a lista
     return render_template('solicitacoesCompra.html', pedidos = solicitacoes, nome=session['user_nome'])
 
 #Página de detalhes da solicitacao

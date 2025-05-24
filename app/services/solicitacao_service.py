@@ -1,6 +1,8 @@
 from datetime import datetime
 from flask import session, flash, render_template
 from app.models.database import Database
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 class SolicitacaoService:
     def __init__(self):
@@ -35,9 +37,11 @@ class SolicitacaoService:
             condicoes.append("sc.id_solicitacao = %s")
             params.append(id)
 
-        if data_inicio:
-            condicoes.append("sc.data_solicitacao >= %s")
-            params.append(data_inicio)
+        if data_inicio == None or data_inicio == '':
+            data_inicio = date.today() - relativedelta(months=1)
+
+        condicoes.append("sc.data_solicitacao >= %s")
+        params.append(data_inicio)
 
         if data_fim:
             condicoes.append("sc.data_solicitacao <= %s")
