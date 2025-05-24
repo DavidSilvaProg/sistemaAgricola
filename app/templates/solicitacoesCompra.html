@@ -8,17 +8,16 @@
         </div>
         <div class="filtro-container">
             <div class="filtro-container">
-                 <div class="esquerda-filtro">
-                    <input  type="checkbox" id="ocultarCancelados" checked onchange="filtrarTabelaGeralPorId('solicitacoes')">
+                <div class="esquerda-filtro">
+                    <input type="checkbox" id="ocultarCancelados" checked onchange="filtrarTabelaGeralPorId()">
                     <label for="ocultarCancelados">Ocultar pedidos Cancelados</label>
-                 </div>
+                </div>
                 <div class="esquerda-filtro">
-                    <input  type="checkbox" id="ocultarRecebidos" checked onchange="filtrarTabelaGeralPorId('solicitacoes')">
+                    <input type="checkbox" id="ocultarRecebidos" checked onchange="filtrarTabelaGeralPorId()">
                     <label for="ocultarRecebidos">Ocultar pedidos Recebidos</label>
-                 </div>
-
+                </div>
                 <div class="esquerda-filtro">
-                    <select class="padrao-input" style="width: 30%;"id="filtroStatus" onchange="filtrarTabelaGeralPorId('solicitacoes')">
+                    <select class="padrao-input" style="width: 30%;" id="filtroStatus" onchange="filtrarTabelaGeralPorId()">
                         <option value="">Todos os status</option>
                         <option value="Solicitado">Solicitado</option>
                         <option value="Aprovado">Aprovado</option>
@@ -27,9 +26,15 @@
                         <option value="Cancelado">Cancelado</option>
                     </select>
                 </div>
+
                 <div class="input-com-icone">
                     <i class="fas fa-search"></i>
-                    <input type="text" class="filtroTabela" data-tabela="solicitacoes" placeholder="Filtrar solicitações..." onkeyup="filtrarTabelaGeral(this)" />
+                    <input type="text" class="filtroTabela" id="textoBusca" placeholder="Filtrar solicitações..." onkeyup="filtrarTabelaGeralPorId()" />
+                </div><div class="filtro-data">
+                    <label for="dataInicio">Início:</label>
+                    <input type="date" class="padrao-input" id="dataInicio" onchange="filtrarTabelaGeralPorId()">
+                    <label for="dataFim">Fim:</label>
+                    <input type="date" class="padrao-input" id="dataFim" onchange="filtrarTabelaGeralPorId()">
                 </div>
             </div>
             <br>

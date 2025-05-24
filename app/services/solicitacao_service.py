@@ -22,41 +22,68 @@ class SolicitacaoService:
         ultimoId = (self.db.execute(query, data))
         self.incluirProdutos(ultimoId, produtos)
 
-
-    def buscar_solicitacoes(self, id=0, unica=False):
-        condicao = "1=1"  # Começamos com uma condição sempre verdadeira
+    def buscar_solicitacoes(self, id=0, unica=False, data_inicio=None, data_fim=None,
+                            status=None, ocultar_cancelados=False, ocultar_recebidos=False, busca=""):
+        condicoes = []
         params = []
 
         if session['nivel'] != 'administrador':
-            condicao = "u.id_usuario = %s"
+            condicoes.append("u.id_usuario = %s")
             params.append(session["user_id"])
 
         if unica:
-            condicao += " AND sc.id_solicitacao = %s"
+            condicoes.append("sc.id_solicitacao = %s")
             params.append(id)
 
+        if data_inicio:
+            condicoes.append("sc.data_solicitacao >= %s")
+            params.append(data_inicio)
+
+        if data_fim:
+            condicoes.append("sc.data_solicitacao <= %s")
+            params.append(data_fim)
+
+        if status:
+            condicoes.append("sc.status_solicitacao = %s")
+            params.append(status)
+
+        if ocultar_cancelados:
+            condicoes.append("sc.status_solicitacao != 'Cancelado'")
+
+        if ocultar_recebidos:
+            condicoes.append("sc.status_solicitacao != 'Recebido'")
+
+        condicao_final = " AND ".join(condicoes) if condicoes else "1=1"
+
         query = f"""
-                SELECT
-                    sc.id_solicitacao,
-                    sc.nome_solicitacao,
-                    s.nome_setor,
-                    sc.prioridade_solicitacao,
-                    sc.status_solicitacao,
-                    sc.data_solicitacao,
-                    u.nome_usuario
-                FROM
-                    solicitacao_compras sc
-                JOIN setores s ON sc.id_setor = s.id_setor
-                JOIN usuarios u ON sc.id_usuario = u.id_usuario
-                WHERE {condicao}
-            """
+            SELECT
+                sc.id_solicitacao,
+                sc.nome_solicitacao,
+                s.nome_setor,
+                sc.prioridade_solicitacao,
+                sc.status_solicitacao,
+                sc.data_solicitacao,
+                u.nome_usuario
+            FROM solicitacao_compras sc
+            JOIN setores s ON sc.id_setor = s.id_setor
+            JOIN usuarios u ON sc.id_usuario = u.id_usuario
+            WHERE {condicao_final}
+        """
 
         resultado = self.db.execute(query, params, fetch=True)
 
-        # Formata datas
-        for solicitacao in resultado:
-            solicitacao['data_solicitacao'] = solicitacao['data_solicitacao'].strftime("%d/%m/%Y") if solicitacao[
-                'data_solicitacao'] else None
+        # Busca por texto (manual no Python)
+        if busca:
+            resultado = [
+                r for r in resultado
+                if busca in str(r['nome_usuario']).lower()
+                   or busca in str(r['nome_solicitacao']).lower()
+                   or busca in str(r['nome_setor']).lower()
+            ]
+
+        for r in resultado:
+            if r['data_solicitacao']:
+                r['data_solicitacao'] = r['data_solicitacao'].strftime("%d/%m/%Y")
 
         return resultado
 

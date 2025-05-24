@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from app.services.solicitacao_service import SolicitacaoService
 from app.services.autenticacao_service import AutenticacaoService
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 bp_solicitacao = Blueprint('solicitacao', __name__)
 solicitacao_service = SolicitacaoService()
@@ -16,7 +18,10 @@ def index():
 @bp_solicitacao.route('/solicitacoesCompra')
 @autenticacao_service.login_required
 def solicitacoesCompra():
-    solicitacoes = solicitacao_service.buscar_solicitacoes()[::-1] #inverte a lista
+    hoje = date.today()
+    um_mes_atras = hoje - relativedelta(months=1)
+
+    solicitacoes = solicitacao_service.buscar_solicitacoes(data_inicio=um_mes_atras, ocultar_recebidos=True, ocultar_cancelados=True)[::-1] #inverte a lista
     return render_template('solicitacoesCompra.html', pedidos = solicitacoes, nome=session['user_nome'])
 
 #Página de detalhes da solicitacao
@@ -57,3 +62,23 @@ def setores():
     setores = solicitacao_service.buscar_setores()[::-1] #inverte a lista
     return render_template('setores.html', setores = setores, nome=session['user_nome'])
 
+@bp_solicitacao.route('/api/solicitacoes')
+@autenticacao_service.login_required
+def api_solicitacoes():
+    data_inicio = request.args.get('data_inicio')
+    data_fim = request.args.get('data_fim')
+    status = request.args.get('status')
+    busca = request.args.get('busca', '').lower()
+    ocultar_cancelados = request.args.get('ocultar_cancelados') == 'true'
+    ocultar_recebidos = request.args.get('ocultar_recebidos') == 'true'
+
+    resultado = solicitacao_service.buscar_solicitacoes(
+        data_inicio = data_inicio,
+        data_fim = data_fim,
+        status = status,
+        ocultar_cancelados = ocultar_cancelados,
+        ocultar_recebidos = ocultar_recebidos,
+        busca = busca
+    )
+
+    return jsonify(resultado)

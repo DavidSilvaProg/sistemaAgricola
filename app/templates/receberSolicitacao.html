@@ -51,7 +51,7 @@
                         <tr>
                             <td><input type="text" class="padrao-input" name="produto{{ produto['id_produto'] }}" value="{{ produto['nome_produto'] }}" ></td>
                             <td>
-                                <input type="number" class="padrao-input" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}" min="0">
+                                <input type="text" class="padrao-input" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}" min="0">
                             </td>
                             <td>
                                 <input type="text" class="padrao-input" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}" placeholder="0.00">

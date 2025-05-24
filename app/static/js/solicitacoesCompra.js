@@ -70,3 +70,41 @@ function filtrarTabelaGeralPorId(idTabela) {
     aplicarFiltros(idTabela);
 }
 
+async function filtrarTabelaGeralPorId() {
+    const dataInicio = document.getElementById("dataInicio").value;
+    const dataFim = document.getElementById("dataFim").value;
+    const status = document.getElementById("filtroStatus").value;
+    const textoBusca = document.getElementById("textoBusca").value.toLowerCase();
+    const ocultarCancelados = document.getElementById("ocultarCancelados").checked;
+    const ocultarRecebidos = document.getElementById("ocultarRecebidos").checked;
+
+    const url = `/api/solicitacoes?data_inicio=${dataInicio}&data_fim=${dataFim}&status=${status}&ocultar_cancelados=${ocultarCancelados}&ocultar_recebidos=${ocultarRecebidos}&busca=${textoBusca}`;
+
+    const response = await fetch(url);
+    const dados = await response.json();
+
+    renderTabelaSolicitacoes(dados);
+}
+
+function renderTabelaSolicitacoes(dados) {
+    const tbody = document.querySelector("#solicitacoes tbody");
+    tbody.innerHTML = "";
+
+    dados.forEach(pedido => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${pedido.id_solicitacao}</td>
+            <td>${pedido.nome_usuario}</td>
+            <td>${pedido.nome_solicitacao}</td>
+            <td>${pedido.nome_setor}</td>
+            <td>${pedido.prioridade_solicitacao}</td>
+            <td>${pedido.status_solicitacao}</td>
+            <td>${pedido.data_solicitacao}</td>
+            <td><span class="detalhes" onclick="verDetalhes(${pedido.id_solicitacao})">Detalhes</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById("contagemVisivel").innerHTML = `Mostrando <strong>${dados.length}</strong> solicitações`;
+}
+

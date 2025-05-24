@@ -65,6 +65,10 @@ th.ordenavel:hover::after {
     color: #FFFFFF;
 }
 
+.filtro-data input{
+    width: 20%;
+}
+
 .solicitacoes{
     max-width: 1200px;
 }
