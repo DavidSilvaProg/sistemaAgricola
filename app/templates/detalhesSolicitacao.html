@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Lista de Pedidos{% endblock %}
 {% block content %}
-    <h1>Detalhes do Pedido</h1>
-
     <div class="container container-cadastro-solicitacao">
+        <h2>Detalhes do Pedido</h2>
+        <br>
         {% for solicitacao in solicitacao %}
             <div class="info">
                 <strong>Nome do funcionário:</strong>
