@@ -1,3 +1,18 @@
+document.addEventListener('DOMContentLoaded', function () {
+	ativarCliqueNasLinhas();
+});
+
+function ativarCliqueNasLinhas() {
+	const linhas = document.querySelectorAll('#tabelaSolicitacoes tr');
+
+	linhas.forEach(linha => {
+		linha.addEventListener('click', () => {
+			linhas.forEach(l => l.classList.remove('bg-gray-200'));
+			linha.classList.add('bg-gray-200');
+		});
+	});
+}
+
 window.onload = function () {
     aplicarFiltrosRemotos();
 
@@ -67,6 +82,7 @@ function renderTabelaSolicitacoes(dados) {
     });
 
     document.getElementById("contagemVisivel").innerHTML = `Mostrando <strong>${dados.length}</strong> solicitações`;
+    ativarCliqueNasLinhas();
 }
 
 function debounce(func, delay) {

@@ -64,7 +64,7 @@
 
         <!-- Tabela -->
         <div class="overflow-x-auto shadow rounded">
-            <table id="solicitacoes" class="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <table id="solicitacoes" class="min-w-[900px] divide-y divide-gray-200 text-sm text-left">
                 <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
                     <tr>
                         <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="0">ID</th>
@@ -77,7 +77,7 @@
                         <th class="px-4 py-2">Detalhes</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-700">
+                <tbody id="tabelaSolicitacoes" class="divide-y divide-gray-200 text-gray-700">
                     {% for pedido in pedidos %}
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-4 py-2">{{ pedido['id_solicitacao'] }}</td>
