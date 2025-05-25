@@ -1,5 +1,17 @@
+function ativarCliqueNasLinhas() {
+	const linhas = document.querySelectorAll('#tabelaRecebidos tr');
+
+	linhas.forEach(linha => {
+		linha.addEventListener('click', () => {
+			linhas.forEach(l => l.classList.remove('bg-gray-200'));
+			linha.classList.add('bg-gray-200');
+		});
+	});
+}
+
 window.onload = function () {
     aplicarFiltroInicial();
+    ativarCliqueNasLinhas();
 };
 
 function aplicarFiltroInicial() {
@@ -64,4 +76,5 @@ function renderTabelaRecebidos(dados) {
 
     const badge = document.getElementById("contagemVisivel");
     badge.innerHTML = `Mostrando <strong>${dados.length}</strong> pedidos`;
+    ativarCliqueNasLinhas();
 }

@@ -38,7 +38,7 @@
                         <th class="px-4 py-2">Detalhes</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody id="tabelaRecebidos" class="divide-y divide-gray-200">
                     {% for recebido in recebido %}
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-2 text-gray-800">{{ recebido['id_solicitacao'] }}</td>
