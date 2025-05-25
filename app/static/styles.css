@@ -250,7 +250,17 @@ button {
 }
 
 .btn-adicionar { color: blue; }
-.btn-remover { color: red; }
+.btn-remover {
+    color: red;
+}
+
+@media (max-width: 640px) {
+	.btn-remover {
+		font-size: 0.75rem;
+		color: red; /* 'font-color' não existe em CSS */
+	}
+}
+
 
 /* ===== BADGES ===== */
 .badge-contador {
