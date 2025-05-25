@@ -1,50 +1,63 @@
 {% extends "base.html" %}
 {% block title %}Lista de Recebidos{% endblock %}
 {% block content %}
-    <div class="container solicitacoes">
-        <h2>Pedidos Recebidos</h2>
-        <div class="filtro-container">
-            <div class="filtro-data">
-                <label for="dataInicio">Início:</label>
-                <input type="date" class="padrao-input" id="dataInicio" onchange="debounce(filtrarRecebidosPorData())">
-                <label for="dataFim">Fim:</label>
-                <input type="date" class="padrao-input" id="dataFim" onchange="debounce(filtrarRecebidosPorData())">
-            </div>
-            <br>
-            <span id="contagemVisivel" class="badge-contador">Mostrando <strong>0</strong> pedidos</span>
-        </div>
-        <table id="recebidos">
-            <thead>
-                <tr>
-                    <th class="ordenavel" data-coluna="0">ID</th>
-                    <th class="ordenavel" data-coluna="1">Usuário</th>
-                    <th class="ordenavel" data-coluna="2">Nome Solicitação</th>
-                    <th class="ordenavel" data-coluna="3">Setor</th>
-                    <th class="ordenavel" data-coluna="4">Data Solicitação</th>
-                    <th class="ordenavel" data-coluna="5">Data Recebimento</th>
-                    <th class="ordenavel" data-coluna="6">Valor Total (R$)</th>
-                    <th>Detalhes</th>
+    <div class="max-w-7xl mx-auto p-4 bg-white rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Pedidos Recebidos</h2>
 
-                </tr>
-            </thead>
-            <tbody>
-                {% for recebido in  recebido %}
+        <div class="flex justify-center mb-4">
+            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                <div class="flex flex-col">
+                    <label for="dataInicio" class="text-sm text-gray-600">Início:</label>
+                    <input type="date" id="dataInicio" onchange="debounce(filtrarRecebidosPorData())" class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex flex-col">
+                    <label for="dataFim" class="text-sm text-gray-600">Fim:</label>
+                    <input type="date" id="dataFim" onchange="debounce(filtrarRecebidosPorData())" class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contador -->
+        <div class="mb-4 text-center">
+            <span id="contagemVisivel" class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+                Mostrando <strong>0</strong> solicitações
+            </span>
+        </div>
+
+        <div class="overflow-auto rounded shadow">
+            <table id="recebidos" class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                <thead class="bg-gray-100">
                     <tr>
-                        <td>{{recebido['id_solicitacao']}}</td>
-                        <td>{{recebido['nome_usuario']}}</td>
-                        <td>{{recebido['nome_solicitacao']}}</td>
-                        <td>{{recebido['nome_setor']}}</td>
-                        <td>{{recebido['data_solicitacao']}}</td>
-                        <td>{{recebido['data_recebido']}}</td>
-                        <td>{{recebido['total_recebido']}}</td>
-                        <td>
-                            <span class="detalhes" onclick="verDetalhes({{recebido['id_recebido']}})">Detalhes</span>
-                        </td>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="0">ID</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="1">Usuário</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="2">Nome Solicitação</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="3">Setor</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="4">Data Solicitação</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="5">Data Recebimento</th>
+                        <th class="px-4 py-2 cursor-pointer ordenavel" data-coluna="6">Valor Total (R$)</th>
+                        <th class="px-4 py-2">Detalhes</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for recebido in recebido %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['id_solicitacao'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['nome_usuario'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['nome_solicitacao'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['nome_setor'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['data_solicitacao'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['data_recebido'] }}</td>
+                            <td class="px-4 py-2 text-gray-800">{{ recebido['total_recebido'] }}</td>
+                            <td class="px-4 py-2">
+                                <button onclick="verDetalhes({{ recebido['id_recebido'] }})" class="text-blue-600 hover:underline font-medium">Detalhes</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
 {% endblock %}
 
 {% block scripts %}

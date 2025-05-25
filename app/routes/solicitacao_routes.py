@@ -76,6 +76,6 @@ def api_solicitacoes():
         ocultar_cancelados = ocultar_cancelados,
         ocultar_recebidos = ocultar_recebidos,
         busca = busca
-    )
+    )[::-1]
 
     return jsonify(resultado)

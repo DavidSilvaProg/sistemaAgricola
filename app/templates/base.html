@@ -6,12 +6,14 @@
     <title>{% block title %}Sistema de Pedidos{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 <body>
     <header class="top-header">
         <div class="header-container">
             <div>
-                <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" height="60">
+                <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" class="logo-menu" height="60">
             </div>
 
             <button class="menu-toggle" onclick="toggleMenu()">☰</button>
@@ -27,7 +29,7 @@
                 <a href="{{ url_for('auth.logout') }}" class="login-btn">Sair</a>
         </div>
     </header>
-    <div class="content">
+    <div class="container">
         {% block content %}{% endblock %}
     </div>
 

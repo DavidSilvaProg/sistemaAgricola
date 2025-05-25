@@ -1,88 +1,111 @@
 {% extends "base.html" %}
 {% block title %}Receber Pedido{% endblock %}
 {% block content %}
-    <div class="container container-cadastro-solicitacao">
-        <h2>Receber Pedido</h2>
-        <br>
-        {% for solicitacao in solicitacao %}
-            <div class="info">
-                <strong>Nome do funcionário:</strong>
-                <span id="nome-usuario">{{ solicitacao.nome_usuario }}</span>
-            </div>
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Receber Pedido</h2>
 
-            <div class="info">
-                <strong>Nome da solicitação:</strong>
-                <span id="nome-solicitacao">{{ solicitacao.nome_solicitacao }}</span>
-            </div>
-            <div class="info">
-                <strong>Data da Solicitacao:</strong>
-                <span id="data">{{ solicitacao.data_solicitacao }}</span>
-            </div>
-            <div class="info">
-                <strong>Setor:</strong>
-                <span id="setor">{{ solicitacao.nome_setor }}</span>
-            </div>
-            <div class="info">
-                <strong>Prioridade:</strong>
-                <span id="prioridade">{{ solicitacao.prioridade_solicitacao }}</span>
-            </div>
-            <div class="info">
-                <strong>Status:</strong>
-                <span id="status">{{ solicitacao.status_solicitacao }}</span>
+        {% for solicitacao in solicitacao %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <span class="font-semibold text-gray-700">Nome do funcionário:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.nome_usuario }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Nome da solicitação:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.nome_solicitacao }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Data da Solicitação:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.data_solicitacao }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Setor:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.nome_setor }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Prioridade:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.prioridade_solicitacao }}</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Status:</span>
+                    <span class="text-gray-900 block">{{ solicitacao.status_solicitacao }}</span>
+                </div>
             </div>
         {% endfor %}
-        <form id="form-recebimento" action="{{ action_url }}" method="post">
-            <div class="info">
-                <strong>Data de Recebimento:</strong>
-                <input type="date" name="data_recebimento" class="padrao-input">
+
+        <form id="form-recebimento" action="{{ action_url }}" method="post" class="space-y-6">
+            <div>
+                <label class="block font-semibold text-gray-700 mb-1">Data de Recebimento:</label>
+                <input type="date" name="data_recebimento" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
             </div>
-            <h3>Lista de Produtos</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Preço Unitário (R$)</th>
-                        <th>Excluir</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-produtos">
-                    {% for produto in produtos %}
+
+            <h3 class="text-lg font-bold text-gray-800">Lista de Produtos</h3>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300 text-sm">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <td><input type="text" class="padrao-input" name="produto{{ produto['id_produto'] }}" value="{{ produto['nome_produto'] }}" ></td>
-                            <td>
-                                <input type="text" class="padrao-input" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}" min="0">
-                            </td>
-                            <td>
-                                <input type="text" class="padrao-input" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}" placeholder="0.00">
-                            </td>
-                            <td>
-                                <button type="button" class="btn-remover-produto">x</button>
-                            </td>
+                            <th class="px-4 py-2 text-left">Produto</th>
+                            <th class="px-4 py-2 text-left">Quantidade</th>
+                            <th class="px-4 py-2 text-left">Preço Unitário (R$)</th>
+                            <th class="px-4 py-2 text-left">Excluir</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="button" id="adicionar-produto" class="btn-adicionar-produto padrao-input">
+                    </thead>
+                    <tbody id="lista-produtos">
+                        {% for produto in produtos %}
+                            <tr class="border-t">
+                                <td class="px-4 py-2">
+                                    <input type="text" name="produto{{ produto['id_produto'] }}" value="{{ produto['nome_produto'] }}"
+                                        class="w-full border border-gray-300 rounded px-2 py-1">
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input type="text" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}"
+                                        class="w-full border border-gray-300 rounded px-2 py-1" min="0">
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input type="text" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}"
+                                        placeholder="0.00" class="w-full border border-gray-300 rounded px-2 py-1">
+                                </td>
+                                <td class="px-4 py-2">
+                                    <button type="button"
+                                        class="text-red-600 font-bold border border-red-300 rounded px-4 py-2 h-[42px] hover:bg-red-100 transition btn-remover-produto">
+                                        x
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="button" id="adicionar-produto" class="block w-full text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
                 + Adicionar Produto
             </button>
+
             <div>
-                <strong>Valor Frete (R$):</strong>
-                <input type="text" name="valor_frete" id="valor-frete" class="padrao-input" placeholder="0.00">
+                <label class="block font-semibold text-gray-700 mb-1">Valor Frete (R$):</label>
+                <input type="text" name="valor_frete" id="valor-frete" placeholder="0.00"
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
             </div>
-            <br>
+
             <div>
-                <strong>Valor Total do Pedido (R$):</strong>
-                <input type="text" name="valor_total" id="valor-total" class="padrao-input" placeholder="0.00">
+                <label class="block font-semibold text-gray-700 mb-1">Valor Total do Pedido (R$):</label>
+                <input type="text" name="valor_total" id="valor-total" placeholder="0.00"
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
             </div>
-            <br>
+
             <div>
-                <strong>Observações:</strong>
-                <textarea type="text" name="observacao" id="observacao" class="padrao-input observacao-pedido"></textarea>
+                <label class="block font-semibold text-gray-700 mb-1">Observações:</label>
+                <textarea name="observacao" id="observacao" rows="4"
+                    class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200 resize-none"></textarea>
             </div>
-            <button type="submit" class="btn-receber-solicitacao padrao-input">Gravar Recebimento</button>
+
+            <button type="submit" class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition font-semibold">
+                Gravar Recebimento
+            </button>
         </form>
     </div>
+
 
 {% endblock %}
 {% block scripts %}

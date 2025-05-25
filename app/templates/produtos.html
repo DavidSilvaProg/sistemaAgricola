@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Lista de Produtos{% endblock %}
+{% block content %}
+  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-4">Produtos Cadastrados</h1>
+
+    <!-- Ações em lote -->
+    <div id="bulk-actions" class="hidden mb-4 space-x-2">
+      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Editar Selecionados</button>
+      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Inativar Selecionados</button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="overflow-x-auto rounded-lg shadow">
+      <table class="min-w-full bg-white text-sm text-left text-gray-700">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
+          <tr>
+            <th class="px-4 py-3">
+              <input type="checkbox" id="select-all" class="form-checkbox">
+            </th>
+            <th class="px-4 py-3">Produto</th>
+            <th class="px-4 py-3">Código</th>
+            <th class="px-4 py-3">Unidade</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3 text-center">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="product-table-body" class="divide-y divide-gray-200">
+          <!-- Exemplo de linha -->
+          <tr>
+            <td class="px-4 py-3">
+              <input type="checkbox" class="item-checkbox form-checkbox">
+            </td>
+            <td class="px-4 py-3">Caneta Azul</td>
+            <td class="px-4 py-3">001</td>
+            <td class="px-4 py-3">UN</td>
+            <td class="px-4 py-3">Ativo</td>
+            <td class="px-4 py-3 text-center space-x-2">
+              <button title="Visualizar" class="text-blue-500 hover:text-blue-700">👁️</button>
+              <button title="Editar" class="text-yellow-500 hover:text-yellow-700">✏️</button>
+              <button title="Inativar" class="text-red-500 hover:text-red-700">🚫</button>
+            </td>
+          </tr>
+          <!-- Adicione mais linhas aqui -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/produtos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
+{% endblock %}

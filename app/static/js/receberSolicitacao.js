@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <td><input type="text" class="padrao-input" name="produto${contadorProduto}" placeholder="Nome do Produto"></td>
             <td><input type="number" class="padrao-input" name="quantidade${contadorProduto}" value="0" min="0"></td>
             <td><input type="text" class="padrao-input" name="preco${contadorProduto}" placeholder="0.00"></td>
-            <td><button type="button" class="btn-remover-produto">x</button></td>
+            <td><button type="button" class="text-red-600 font-bold border border-red-300 rounded px-4 py-2 h-[42px] hover:bg-red-100 transition btn-remover-produto">x</button></td>
         `;
 
         tbody.appendChild(novaLinha);

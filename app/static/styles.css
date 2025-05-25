@@ -2,6 +2,7 @@
 :root {
   --font-principal: Arial, sans-serif;
   --cor-fundo-container: #f6f6f7;
+  --cor-fundo-menu: #B6B6BE;
   --cor-fundo-table: #fff;
   --cor-primaria: #007BFF;
   --cor-sucesso: #28a745;
@@ -30,13 +31,8 @@ body {
 
 /* ===== LAYOUT PRINCIPAL ===== */
 .container {
-    max-width: 900px;
+
     margin: 50px auto;
-    background: var(--cor-fundo-container);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
 
 .container-login,
@@ -221,7 +217,8 @@ button {
 }
 
 .btn-solicitar:hover {
-    background-color: #218838;
+    background-color: #218838
+    padding: 8px 16px !important;
 }
 
 .btn-visualizar {
@@ -401,6 +398,10 @@ nav ul li a:hover {
   background-color: var(--azul-royal);
   border-radius: 8px;
   transition: all 0.3s ease;
+}
+
+.logo-menu{
+    height: 60px;
 }
 
 .login-btn {

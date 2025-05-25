@@ -162,3 +162,10 @@ def api_recebidos():
 
     dados = solicitacao_service.buscarSolicitacoesRecebidas(data_inicio=data_inicio, data_fim=data_fim)
     return jsonify(dados)
+
+#Página de solicitações de compra
+@bp_admin.route('/produtos')
+@autenticacao_service.login_required
+def produtos():
+    recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
+    return render_template('produtos.html', recebido = recebidas)
