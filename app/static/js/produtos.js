@@ -14,4 +14,8 @@ const selectAll = document.getElementById("select-all");
 
     checkboxes.forEach(checkbox => {
       checkbox.addEventListener("change", toggleBulkActions);
-    });
+});
+
+function novoProduto() {
+    window.location.href = "cadastroProduto";
+}

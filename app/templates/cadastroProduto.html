@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Cadastro de Produtos{% endblock %}
+{% block content %}
+    <div class="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">
+            {{ 'Editar Produto' if produto else 'Cadastro de Produto' }}
+        </h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="text-red-600 mb-4 text-sm">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ action_url }}" class="grid gap-4 md:grid-cols-2">
+            <div>
+                <label for="nome_produto" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto:</label>
+                <input type="text" name="nome_produto" id="nome_produto" value="{{ produto.nome_produto if produto else '' }}" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="descricao_produto" class="block text-sm font-medium text-gray-700 mb-1">Descrição:</label>
+                <input type="text" name="descricao_produto" id="descricao_produto" value="{{ produto.descricao_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="codigo_interno_produto" class="block text-sm font-medium text-gray-700 mb-1">Código Interno:</label>
+                <input type="text" name="codigo_interno_produto" id="codigo_interno_produto" value="{{ produto.codigo_interno_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="unidade_medida_produto" class="block text-sm font-medium text-gray-700 mb-1">Unidade de Medida:</label>
+                <select name="unidade_medida_produto" id="unidade_medida_produto" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="un">Unidade</option>
+                    <option value="kg">Quilograma</option>
+                    <option value="g">Grama</option>
+                    <option value="l">Litro</option>
+                    <option value="ml">Mililitro</option>
+                    <option value="m">Metro</option>
+                    <option value="cm">Centímetro</option>
+                    <option value="cx">Caixa</option>
+                    <option value="pct">Pacote</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="preco_unitario_produto" class="block text-sm font-medium text-gray-700 mb-1">Preço Unitário (R$):</label>
+                <input type="text" name="preco_unitario_produto" id="preco_unitario_produto" value="{{ produto.preco_unitario_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="categoria_id" class="block text-sm font-medium text-gray-700 mb-1">Categoria (ID):</label>
+                <input type="text" name="categoria_id" id="categoria_id" value="{{ produto.categoria_id if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="status_produto" class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                <select name="status_produto" id="status_produto" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="ativo" {% if produto and produto.status_produto == 'ativo' %}selected{% endif %}>Ativo</option>
+                    <option value="inativo" {% if produto and produto.status_produto == 'inativo' %}selected{% endif %}>Inativo</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="fabricante_produto" class="block text-sm font-medium text-gray-700 mb-1">Fabricante:</label>
+                <input type="text" name="fabricante_produto" id="fabricante_produto" value="{{ produto.fabricante_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="estoque_produto" class="block text-sm font-medium text-gray-700 mb-1">Estoque:</label>
+                <input type="text" name="estoque_produto" id="estoque_produto" value="{{ produto.estoque_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="estoque_minimo_produto" class="block text-sm font-medium text-gray-700 mb-1">Estoque Mínimo:</label>
+                <input type="text" name="estoque_minimo_produto" id="estoque_minimo_produto" value="{{ produto.estoque_minimo_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="md:col-span-2 pt-2">
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition duration-300">
+                    {{ 'Salvar Alterações' if produto else 'Cadastrar Produto' }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/cadastroProduto.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
+{% endblock %}

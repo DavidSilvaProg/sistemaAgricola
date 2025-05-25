@@ -31,7 +31,7 @@ body {
 
 /* ===== LAYOUT PRINCIPAL ===== */
 .container {
-
+    background: var(--cor-fundo-container);
     margin: 50px auto;
 }
 

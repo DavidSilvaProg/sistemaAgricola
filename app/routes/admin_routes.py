@@ -169,3 +169,11 @@ def api_recebidos():
 def produtos():
     recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
     return render_template('produtos.html', recebido = recebidas)
+
+
+#PRODUTOS
+@bp_admin.route('/cadastroProduto')
+@autenticacao_service.login_required
+def cadastroProduto():
+    #setores = solicitacao_service.buscar_setores()
+    return render_template('cadastroProduto.html')
