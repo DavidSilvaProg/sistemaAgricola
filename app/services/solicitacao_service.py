@@ -106,14 +106,14 @@ class SolicitacaoService:
                 nome_produto,
                 quantidade_produto
             FROM
-                produtos
+                produtos_solicitacao
             WHERE id_solicitacao = %s
         """
         return self.db.execute(query, (id,),  fetch=True)
 
     def incluirProdutos(self, id, produtos):
         query = """
-            INSERT INTO produtos
+            INSERT INTO produtos_solicitacao
             (nome_produto, quantidade_produto, id_solicitacao)
             VALUES (%s, %s, %s)
         """
