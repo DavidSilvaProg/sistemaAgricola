@@ -1,4 +1,4 @@
- function toggleMenu() {
-    const menu = document.getElementById("menu");
-    menu.classList.toggle("show");
- }
+function toggleSidebar() {
+		const sidebar = document.getElementById('sidebar');
+		sidebar.classList.toggle('hidden');
+	}

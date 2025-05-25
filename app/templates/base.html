@@ -10,28 +10,42 @@
 
 </head>
 <body>
-    <header class="top-header">
-        <div class="header-container">
-            <div>
-                <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" class="logo-menu" height="60">
+    <div class="flex min-h-screen">
+        <!-- Menu lateral -->
+        <aside id="sidebar" class="bg-gray-800 text-white w-52 p-4 space-y-6 hidden sm:flex sm:flex-col items-start">
+            <!-- Logo alinhada à esquerda -->
+            <div class="mb-4">
+                <img src="{{ url_for('static', filename='logo-login.png') }}" alt="Logo" class="h-16">
             </div>
 
-            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <!-- Menu alinhado à esquerda -->
+            <nav class="flex flex-col w-full text-sm font-medium space-y-2">
+                <a href="/solicitacoesCompra" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Pedidos</a>
 
-            <nav class="menu" id="menu">
-                <a href="/solicitacoesCompra">Pedidos</a></li>
                 {% if session.nivel == 'administrador' %}
-                    <a href="/solicitacoesRecebidas">Recebidos</a>
-                    <a href="/usuarios">Usuários</a>
-                    <a href="/setores">Setores</a>
+                    <a href="/solicitacoesRecebidas" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Recebidos</a>
+                    <a href="/usuarios" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Usuários</a>
+                    <a href="/setores" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Setores</a>
                 {% endif %}
+
+                <a href="{{ url_for('auth.logout') }}" class="text-left mt-4 hover:bg-red-600 px-4 py-2 rounded w-full">
+                    Sair
+                </a>
             </nav>
-                <a href="{{ url_for('auth.logout') }}" class="login-btn">Sair</a>
-        </div>
-    </header>
-    <div class="container">
-        {% block content %}{% endblock %}
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="flex-1 bg-gray-100 p-6 overflow-auto w-full">
+            <!-- Topo para botão toggle no mobile -->
+            <div class="sm:hidden flex items-center justify-between mb-4">
+                <button onclick="toggleSidebar()" class="text-gray-700 text-2xl">☰</button>
+                <span class="font-bold text-gray-800">Menu</span>
+            </div>
+		<!-- Aqui vai o conteúdo da página -->
+		{% block content %}{% endblock %}
+        </main>
     </div>
+
 
 
     {% block scripts %}
