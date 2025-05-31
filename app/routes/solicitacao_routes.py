@@ -26,7 +26,7 @@ def solicitacoesCompra():
 @autenticacao_service.login_required
 def detalhesSolicitacao(id):
     solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
-    produtos = solicitacao_service.buscar_produtos(id)
+    produtos = solicitacao_service.buscar_produtos_solicitacao(id)
     return render_template('detalhesSolicitacao.html', solicitacao=solicitacao, produtos=produtos)
 
 #Página de cadastro de solicitações de compras, carrega dados de produtos e setores

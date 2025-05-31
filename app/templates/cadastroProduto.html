@@ -31,15 +31,15 @@
             <div>
                 <label for="unidade_medida_produto" class="block text-sm font-medium text-gray-700 mb-1">Unidade de Medida:</label>
                 <select name="unidade_medida_produto" id="unidade_medida_produto" required class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="un">Unidade</option>
-                    <option value="kg">Quilograma</option>
-                    <option value="g">Grama</option>
-                    <option value="l">Litro</option>
-                    <option value="ml">Mililitro</option>
-                    <option value="m">Metro</option>
-                    <option value="cm">Centímetro</option>
-                    <option value="cx">Caixa</option>
-                    <option value="pct">Pacote</option>
+                    <option value="Unidade">Unidade</option>
+                    <option value="Quilograma">Quilograma</option>
+                    <option value="Grama">Grama</option>
+                    <option value="Litro">Litro</option>
+                    <option value="Mililitro">Mililitro</option>
+                    <option value="Metro">Metro</option>
+                    <option value="Centímetro">Centímetro</option>
+                    <option value="Caixa">Caixa</option>
+                    <option value="Pacote">Pacote</option>
                 </select>
             </div>
 
@@ -50,7 +50,7 @@
 
             <div>
                 <label for="categoria_id" class="block text-sm font-medium text-gray-700 mb-1">Categoria (ID):</label>
-                <input type="text" name="categoria_id" id="categoria_id" value="{{ produto.categoria_id if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="categoria_id" id="categoria_id" value="{{ produto.categoria_id if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
             </div>
 
             <div>

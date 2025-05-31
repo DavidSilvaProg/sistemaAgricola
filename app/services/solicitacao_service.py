@@ -99,7 +99,7 @@ class SolicitacaoService:
         params = [status, id]
         return self.db.execute(query, params)
 
-    def buscar_produtos(self, id=0):
+    def buscar_produtos_solicitacao(self, id=0):
         query = """
             SELECT
                 id_produto,
@@ -330,3 +330,94 @@ class SolicitacaoService:
             WHERE id_recebido = %s
         """
         return self.db.execute(query, (id,),  fetch=True)
+
+
+    def cadastrar_produto(self, produto):
+        hoje = date.today()
+        query = """
+    		INSERT INTO produtos (
+    			nome_produto,
+    			descricao_produto,
+    			codigo_interno_produto,
+    			unidade_medida_produto,
+    			preco_unitario_produto,
+    			categoria_id,
+    			status_produto,
+    			data_cadastro_produto,
+    			fabricante_produto,
+    			estoque_produto,
+    			estoque_minimo_produto
+    		)
+    		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    	"""
+
+        data = (
+            produto['nome_produto'],
+            produto['descricao_produto'],
+            produto['codigo_interno_produto'],
+            produto['unidade_medida_produto'],
+            produto['preco_unitario_produto'],
+            0, #produto['categoria_id'],
+            produto['status_produto'],
+            hoje,  # data_cadastro_produto
+            produto['fabricante_produto'],
+            produto['estoque_produto'],
+            produto['estoque_minimo_produto']
+        )
+
+        self.db.execute(query, data)
+
+    def buscar_produtos(self, pagina=1, por_pagina=20, ocultar_inativos=False, busca=""):
+        offset = (pagina - 1) * por_pagina
+
+        condicoes = []
+        parametros = []
+        print(f"Mostra inativos: {ocultar_inativos}")
+        if ocultar_inativos:
+            condicoes.append("LOWER(status_produto) != 'inativo'")
+
+        if busca:
+            condicoes.append("(LOWER(nome_produto) LIKE %s OR LOWER(codigo_interno_produto) LIKE %s)")
+            parametros += [f"%{busca}%", f"%{busca}%"]
+
+        where_clause = "WHERE " + " AND ".join(condicoes) if condicoes else ""
+
+        query = f"""
+    		SELECT
+    			id_produto,
+    			nome_produto,
+    			codigo_interno_produto,
+    			unidade_medida_produto,
+    			preco_unitario_produto,
+    			estoque_produto,
+    			estoque_minimo_produto,
+    			status_produto,
+    			data_cadastro_produto
+    		FROM produtos
+    		{where_clause}
+    		ORDER BY nome_produto
+    		LIMIT %s OFFSET %s
+    	"""
+        parametros += [por_pagina, offset]
+        return self.db.execute(query, parametros, fetch=True)
+
+    def contar_total_produtos(self, ocultar_inativos=False, busca=""):
+        condicoes = []
+        parametros = []
+
+        if ocultar_inativos:
+            condicoes.append("LOWER(status_produto) != 'inativo'")
+
+        if busca:
+            condicoes.append("(LOWER(nome_produto) LIKE %s OR LOWER(codigo_interno_produto) LIKE %s)")
+            parametros += [f"%{busca}%", f"%{busca}%"]
+
+        where_clause = "WHERE " + " AND ".join(condicoes) if condicoes else ""
+
+        query = f"SELECT COUNT(*) AS total FROM produtos {where_clause}"
+
+        resultado = self.db.execute(query, parametros, fetch=True)
+        return resultado[0]["total"] if resultado else 0
+
+
+

@@ -1,57 +1,75 @@
 let ordemCrescenteGlobal = {};
 
 document.querySelectorAll('th.ordenavel').forEach(th => {
-    th.style.cursor = 'pointer';
-    th.addEventListener('click', function () {
-        const tabela = th.closest('table');
-        const coluna = parseInt(th.getAttribute('data-coluna'));
-        const idTabela = tabela.id;
+	th.style.cursor = 'pointer';
+	th.addEventListener('click', function () {
+		const tabela = th.closest('table');
+		const coluna = parseInt(th.getAttribute('data-coluna'));
+		const idTabela = tabela.id;
 
-        if (!ordemCrescenteGlobal[idTabela]) {
-            ordemCrescenteGlobal[idTabela] = {};
-        }
+		// Inicializa o controle da tabela se ainda não existir
+		if (!ordemCrescenteGlobal[idTabela]) {
+			ordemCrescenteGlobal[idTabela] = {};
+		}
 
-        const asc = !ordemCrescenteGlobal[idTabela][coluna];
-        ordemCrescenteGlobal[idTabela][coluna] = asc;
+		// Resetar ordenações das outras colunas
+		for (let key in ordemCrescenteGlobal[idTabela]) {
+			if (parseInt(key) !== coluna) {
+				delete ordemCrescenteGlobal[idTabela][key];
+			}
+		}
 
-        const linhas = Array.from(tabela.tBodies[0].rows);
+		// Alternar a direção da ordenação
+		const asc = !ordemCrescenteGlobal[idTabela][coluna];
+		ordemCrescenteGlobal[idTabela][coluna] = asc;
 
-        linhas.sort((a, b) => {
-            const aTexto = a.cells[coluna].innerText.toLowerCase();
-            const bTexto = b.cells[coluna].innerText.toLowerCase();
+		// Coleta e filtra apenas as linhas visíveis do tbody
+		const tbody = tabela.tBodies[0];
+		const linhas = Array.from(tbody.rows).filter(row => row.style.display !== 'none');
 
-            const aVal = isNaN(Date.parse(aTexto)) ? (isNaN(aTexto) ? aTexto : parseFloat(aTexto)) : Date.parse(aTexto);
-            const bVal = isNaN(Date.parse(bTexto)) ? (isNaN(bTexto) ? bTexto : parseFloat(bTexto)) : Date.parse(bTexto);
+		// Ordenar as linhas visíveis com base na coluna clicada
+		linhas.sort((a, b) => {
+			const aTexto = a.cells[coluna]?.innerText.trim().toLowerCase() || '';
+			const bTexto = b.cells[coluna]?.innerText.trim().toLowerCase() || '';
 
-            if (aVal < bVal) return asc ? -1 : 1;
-            if (aVal > bVal) return asc ? 1 : -1;
-            return 0;
-        });
+			const valorA = parseValor(aTexto);
+			const valorB = parseValor(bTexto);
 
-        linhas.forEach(linha => tabela.tBodies[0].appendChild(linha));
-    });
+			if (valorA < valorB) return asc ? -1 : 1;
+			if (valorA > valorB) return asc ? 1 : -1;
+			return 0;
+		});
+
+		// Remove todas as linhas do tbody (inclusive travadas) e reaplica ordenação limpa
+		const todasLinhas = Array.from(tbody.rows);
+		todasLinhas.forEach(row => tbody.removeChild(row));
+		linhas.forEach(row => tbody.appendChild(row));
+	});
 });
 
-function filtrarTabela(inputElement) {
-    const filtro = inputElement.value.toLowerCase();
-    const idTabela = inputElement.getAttribute("data-tabela");
-    const tabela = document.getElementById(idTabela);
-    const linhas = tabela.getElementsByTagName("tr");
+// Função para tentar interpretar como número, data ou string
+function parseValor(valor) {
+	// Remove espaços e troca vírgula por ponto
+	const texto = valor.trim().replace(',', '.');
 
-    for (let i = 1; i < linhas.length; i++) {
-        let colunas = linhas[i].getElementsByTagName("td");
-        let corresponde = false;
+	// Verifica se é número real ou inteiro
+	if (/^-?\d+(\.\d+)?$/.test(texto)) {
+		return parseFloat(texto);
+	}
 
-        for (let j = 0; j < colunas.length; j++) {
-            if (colunas[j]) {
-                let texto = colunas[j].textContent || colunas[j].innerText;
-                if (texto.toLowerCase().indexOf(filtro) > -1) {
-                    corresponde = true;
-                    break;
-                }
-            }
-        }
+	// Tenta reconhecer data no formato BR (dd/mm/yyyy)
+	const dataBR = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+	if (dataBR) {
+		return new Date(`${dataBR[3]}-${dataBR[2]}-${dataBR[1]}`).getTime();
+	}
 
-        linhas[i].style.display = corresponde ? "" : "none";
-    }
+	// Tenta reconhecer ISO ou outro formato válido de data
+	const dataISO = Date.parse(texto);
+	if (!isNaN(dataISO)) {
+		return dataISO;
+	}
+
+	// Por fim, retorna como texto
+	return texto.toLowerCase();
 }
+

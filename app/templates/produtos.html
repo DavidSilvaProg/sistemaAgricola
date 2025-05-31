@@ -1,64 +1,102 @@
 {% extends "base.html" %}
 {% block title %}Lista de Produtos{% endblock %}
-{% block content %}
-  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6">
-    <h1 class="text-2xl font-bold mb-4">EM DESENVOLVIMENTO!</h1>
-    <h1 class="text-2xl font-bold mb-4">Produtos Cadastrados</h1>
-    <!-- Botão Nova Solicitação -->
-    <div class="mb-4 text-center">
-      <button onclick="novoProduto()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-        Novo Produto
-      </button>
-    </div>
-
-    <!-- Ações em lote -->
-    <div id="bulk-actions" class="hidden mb-4 space-x-2">
-      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ativar Selecionados</button>
-      <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Inativar Selecionados</button>
-    </div>
-
-    <!-- Tabela -->
-    <div class="overflow-x-auto rounded-lg shadow">
-      <table class="min-w-full bg-white text-sm text-left text-gray-700">
-        <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
-          <tr>
-            <th class="px-4 py-3">
-              <input type="checkbox" id="select-all" class="form-checkbox">
-            </th>
-            <th class="px-4 py-3">Código</th>
-            <th class="px-4 py-3">Produto</th>
-            <th class="px-4 py-3">Unidade</th>
-            <th class="px-4 py-3">Quantidade</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3 text-center">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="product-table-body" class="divide-y divide-gray-200">
-          <!-- Exemplo de linha -->
-          <tr>
-            <td class="px-4 py-3">
-              <input type="checkbox" class="item-checkbox form-checkbox">
-            </td>
-            <td class="px-4 py-3">001</td>
-            <td class="px-4 py-3">Caneta Azul</td>
-
-            <td class="px-4 py-3">UN</td>
-            <td class="px-4 py-3">8</td>
-            <td class="px-4 py-3">Ativo</td>
-            <td class="px-4 py-3 text-center space-x-2">
-              <button title="Visualizar" class="text-blue-500 hover:text-blue-700">👁️</button>
-              <button title="Editar" class="text-yellow-500 hover:text-yellow-700">✏️</button>
-              <button title="Inativar" class="text-red-500 hover:text-red-700">🚫</button>
-            </td>
-          </tr>
-          <!-- Adicione mais linhas aqui -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-{% endblock %}
-
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/produtos.js') }}"></script>
     <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
 {% endblock %}
+{% block content %}
+	<div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6">
+		<h1 class="text-2xl font-bold mb-4">EM DESENVOLVIMENTO!</h1>
+		<h1 class="text-2xl font-bold mb-4">Produtos Cadastrados</h1>
+
+		<!-- Botão Nova Solicitação -->
+		<div class="mb-4 text-center">
+			<button onclick="novoProduto()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+				Novo Produto
+			</button>
+		</div>
+
+		<!-- Filtros -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+			<!-- Checkbox -->
+			<div class="flex items-center space-x-2">
+				<input type="checkbox" id="ocultarInativos" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+				<label for="ocultarInativos" class="text-sm text-gray-700">Ocultar Inativos</label>
+			</div>
+		</div>
+
+		<!-- Campo de busca -->
+		<div class="col-span-1 md:col-span-2 flex items-center bg-white border border-gray-300 rounded px-3 mb-6">
+			<i class="fas fa-search text-gray-400 mr-2"></i>
+			<input type="text" id="textoBusca" placeholder="Filtrar produtos..."
+				class="w-full py-2 text-sm text-gray-700 focus:outline-none">
+		</div>
+
+		<!-- Contador -->
+		<div class="mb-6 text-center">
+			<span id="contagemVisivel" class="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+				Mostrando <strong>0</strong> Produtos
+			</span>
+		</div>
+
+		<!-- Ações em lote -->
+		<div id="bulk-actions" class="hidden mb-4 space-x-2">
+			<button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Ativar Selecionados</button>
+			<button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Inativar Selecionados</button>
+		</div>
+
+		<!-- Tabela -->
+		<div class="overflow-x-auto rounded-lg shadow min-h-[500px]">
+			<table class="min-w-full bg-white text-sm text-left text-gray-700">
+				<thead class="bg-gray-200 text-gray-600 uppercase text-xs">
+					<tr>
+						<th class="px-4 py-3">
+							<input type="checkbox" id="select-all" class="form-checkbox">
+						</th>
+						<th class="px-4 py-3 cursor-pointer ordenavel" data-coluna="2">ID</th>
+						<th class="px-4 py-3 cursor-pointer ordenavel" data-coluna="3">Produto</th>
+						<th class="px-4 py-3 cursor-pointer ordenavel" data-coluna="4">COD INTERNO</th>
+						<th class="px-4 py-3 " >Quantidade</th>
+						<th class="px-4 py-3 ">Status</th>
+						<th class="px-4 py-3 text-center">Ações</th>
+					</tr>
+				</thead>
+				<tbody id="product-table-body" class="divide-y divide-gray-200">
+					{% for produto in produto_lista %}
+						<tr class="hover:bg-gray-50 transition">
+							<td class="px-4 py-3">
+								<input type="checkbox" class="item-checkbox form-checkbox">
+							</td>
+							<td class="px-4 py-3">{{ produto['id_produto'] }}</td>
+							<td class="px-4 py-3">{{ produto['nome_produto'] }}</td>
+							<td class="px-4 py-3">{{ produto['codigo_interno_produto'] }}</td>
+							<td class="px-4 py-3">{{ produto['estoque_produto'] }}</td>
+							<td class="px-4 py-3">{{ produto['status_produto'] }}</td>
+							<td class="px-4 py-3 text-center space-x-2">
+								<button title="Visualizar" onclick="verProduto('{{ produto['id_produto'] }}')" class="text-blue-500 hover:text-blue-700">👁️</button>
+								<button title="Editar" onclick="editarProduto('{{ produto['id_produto'] }}')" class="text-yellow-500 hover:text-yellow-700">✏️</button>
+								<button title="Inativar" onclick="inativarProduto('{{ produto['id_produto'] }}')" class="text-red-500 hover:text-red-700">🚫</button>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr id="spinner-linha">
+						<td colspan="7" class="text-center py-4">
+							<div id="spinner" class="flex justify-center items-center gap-2 text-sm text-gray-600 hidden">
+								<svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+								</svg>
+								Carregando mais produtos...
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+{% endblock %}
+
+
+

@@ -108,7 +108,7 @@ def gravaEditarSetor(id):
 @autenticacao_service.nivel_required('administrador')
 def receberSolicitacao(id):
     solicitacao = solicitacao_service.buscar_solicitacoes(id, unica=True)
-    produtos = solicitacao_service.buscar_produtos(id)
+    produtos = solicitacao_service.buscar_produtos_solicitacao(id)
     return render_template('receberSolicitacao.html', solicitacao=solicitacao, produtos=produtos, action_url=url_for('admin.registrarRecebimentoSolicitacao', id=id))
 
 @autenticacao_service.login_required
@@ -135,6 +135,7 @@ def registrarRecebimentoSolicitacao(id):
 
 #Página de solicitações de compra
 @bp_admin.route('/solicitacoesRecebidas')
+@autenticacao_service.nivel_required('administrador')
 @autenticacao_service.login_required
 def solicitacoesRecebidas():
     recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
@@ -167,14 +168,58 @@ def api_recebidos():
 #Página de solicitações de compra
 @bp_admin.route('/produtos')
 @autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
 def produtos():
-    recebidas = solicitacao_service.buscarSolicitacoesRecebidas()[::-1] #inverte a lista
-    return render_template('produtos.html', recebido = recebidas)
-
+    return render_template('produtos.html')
 
 #PRODUTOS
 @bp_admin.route('/cadastroProduto')
 @autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
 def cadastroProduto():
     #setores = solicitacao_service.buscar_setores()
-    return render_template('cadastroProduto.html')
+    return render_template('cadastroProduto.html', action_url=url_for('admin.cadastrarProduto'))
+
+#Recebe as solicitação de compra do formulário e grava no banco
+@bp_admin.route('/cadastrarProduto', methods=['POST'])
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def cadastrarProduto():
+    produto = {}
+    produto['nome_produto'] = request.form['nome_produto']
+    produto['descricao_produto'] = request.form['descricao_produto']
+    produto['codigo_interno_produto'] = request.form['codigo_interno_produto']
+    produto['unidade_medida_produto'] = request.form['unidade_medida_produto']
+    produto['preco_unitario_produto'] = request.form['preco_unitario_produto']
+    #produto['categoria_id'] = request.form['categoria_id']
+    produto['status_produto'] = request.form['status_produto']
+    produto['fabricante_produto'] = request.form['fabricante_produto']
+    produto['estoque_produto'] = request.form['estoque_produto']
+    produto['estoque_minimo_produto'] = request.form['estoque_minimo_produto']
+
+    solicitacao_service.cadastrar_produto(produto)
+    return redirect(url_for('admin.produtos'))
+
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+@bp_admin.route('/api/produtos')
+def api_produtos():
+	pagina = int(request.args.get("page", 1))
+	por_pagina = int(request.args.get("per_page", 10))
+	busca = request.args.get("busca", "").lower()
+	ocultar_inativos = request.args.get("ocultar_inativos", "true").lower() in ("true", "1", "yes")
+
+	produtos = solicitacao_service.buscar_produtos(pagina, por_pagina, ocultar_inativos, busca)
+
+	if busca:
+		produtos = [p for p in produtos if busca in p["nome_produto"].lower() or busca in p["codigo_interno_produto"].lower()]
+
+	total = solicitacao_service.contar_total_produtos(ocultar_inativos, busca)
+	return jsonify({
+		"produtos": produtos,
+		"total": total,
+		"pagina": pagina,
+		"por_pagina": por_pagina
+	})
+
+
