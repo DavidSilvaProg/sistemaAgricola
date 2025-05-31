@@ -40,6 +40,7 @@
                     <thead class="bg-gray-100 text-gray-700 uppercase">
                         <tr>
                             <th class="px-4 py-2 border-b">Produto</th>
+                            <th class="px-4 py-2 border-b">Unidade</th>
                             <th class="px-4 py-2 border-b">Quantidade</th>
                         </tr>
                     </thead>
@@ -47,6 +48,7 @@
                         {% for produtos in produtos %}
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-4 py-2 border-b">{{ produtos['nome_produto'] }}</td>
+                                <td class="px-4 py-2 border-b">{{ produtos['unidade_produto'] }}</td>
                                 <td class="px-4 py-2 border-b">{{ produtos['quantidade_produto'] }}</td>
                             </tr>
                         {% endfor %}

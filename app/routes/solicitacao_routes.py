@@ -46,8 +46,9 @@ def cadastrarSolicitacao():
     for chave, valor in request.form.items():
         if chave.startswith('produto'):
             numero = chave.replace('produto', '')
+            unidade = request.form.get(f'unidade{numero}')
             quantidade = request.form.get(f'quantidade{numero}')
-            produtos.append({'produto': valor, 'quantidade': quantidade})
+            produtos.append({'produto': valor, 'quantidade': quantidade, 'unidade': unidade})
     prioridade = request.form['prioridade']
     id = session["user_id"]
     solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade, id)

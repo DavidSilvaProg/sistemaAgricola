@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Receber Pedido{% endblock %}
 {% block content %}
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-md">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Receber Pedido</h2>
 
         {% for solicitacao in solicitacao %}
@@ -46,6 +46,7 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-4 py-2 text-left">Produto</th>
+                            <th class="px-4 py-2 text-left">Unidade</th>
                             <th class="px-4 py-2 text-left">Quantidade</th>
                             <th class="px-4 py-2 text-left">Preço Unitário (R$)</th>
                             <th class="px-4 py-2 text-left">Excluir</th>
@@ -58,17 +59,35 @@
                                     <input type="text" name="produto{{ produto['id_produto'] }}" value="{{ produto['nome_produto'] }}"
                                         class="w-full border border-gray-300 rounded px-2 py-1">
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 w-40">
+                                    <select
+                                        id="unidade{{ produto['id_produto'] }}"
+                                        name="unidade{{ produto['id_produto'] }}"
+                                        required
+                                        class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Unidade" {% if produto['unidade_produto'] == 'Unidade' %}selected{% endif %}>Unidade</option>
+                                        <option value="Quilograma" {% if produto['unidade_produto'] == 'Quilograma' %}selected{% endif %}>Quilograma</option>
+                                        <option value="Grama" {% if produto['unidade_produto'] == 'Grama' %}selected{% endif %}>Grama</option>
+                                        <option value="Litro" {% if produto['unidade_produto'] == 'Litro' %}selected{% endif %}>Litro</option>
+                                        <option value="Mililitro" {% if produto['unidade_produto'] == 'Mililitro' %}selected{% endif %}>Mililitro</option>
+                                        <option value="Metro" {% if produto['unidade_produto'] == 'Metro' %}selected{% endif %}>Metro</option>
+                                        <option value="Centímetro" {% if produto['unidade_produto'] == 'Centímetro' %}selected{% endif %}>Centímetro</option>
+                                        <option value="Caixa" {% if produto['unidade_produto'] == 'Caixa' %}selected{% endif %}>Caixa</option>
+                                        <option value="Pacote" {% if produto['unidade_produto'] == 'Pacote' %}selected{% endif %}>Pacote</option>
+                                    </select>
+                                </td>
+                                <td class="px-4 py-2 w-10">
                                     <input type="text" name="quantidade{{ produto['id_produto'] }}" value="{{ produto['quantidade_produto'] }}"
                                         class="w-full border border-gray-300 rounded px-2 py-1" min="0">
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2 w-40">
                                     <input type="text" name="preco{{ produto['id_produto'] }}" value="{{ produto.get('preco_produto', '') }}"
                                         placeholder="0.00" class="w-full border border-gray-300 rounded px-2 py-1">
                                 </td>
                                 <td class="px-4 py-2">
                                     <button type="button"
-                                        class="text-red-600 font-bold border border-red-300 rounded px-4 py-2 h-[42px] hover:bg-red-100 transition btn-remover-produto">
+                                        class="text-red-600 font-bold border border-red-300 rounded px-4 py-1 h-[34px] hover:bg-red-100 transition btn-remover-produto">
                                         x
                                     </button>
                                 </td>

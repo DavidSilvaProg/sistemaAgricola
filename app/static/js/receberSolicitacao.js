@@ -40,10 +40,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const novaLinha = document.createElement("tr");
 
         novaLinha.innerHTML = `
-            <td><input type="text" class="padrao-input" name="produto${contadorProduto}" placeholder="Nome do Produto"></td>
-            <td><input type="number" class="padrao-input" name="quantidade${contadorProduto}" value="0" min="0"></td>
-            <td><input type="text" class="padrao-input" name="preco${contadorProduto}" placeholder="0.00"></td>
-            <td><button type="button" class="text-red-600 font-bold border border-red-300 rounded px-4 py-2 h-[42px] hover:bg-red-100 transition btn-remover-produto">x</button></td>
+            <td class="px-4 py-2"><input type="text" class="w-full border border-gray-300 rounded px-2 py-1" name="produto${contadorProduto}" placeholder="Nome do Produto"></td>
+            <td class="px-4 py-2 w-40"><select
+                    id="unidade${contadorProduto}"
+                    name="unidade${contadorProduto}"
+                    required
+                    class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="Unidade">Unidade</option>
+                    <option value="Quilograma">Quilograma</option>
+                    <option value="Grama">Grama</option>
+                    <option value="Litro">Litro</option>
+                    <option value="Mililitro">Mililitro</option>
+                    <option value="Metro">Metro</option>
+                    <option value="Centímetro">Centímetro</option>
+                    <option value="Caixa">Caixa</option>
+                    <option value="Pacote">Pacote</option>
+                </select></td>
+            <td class="px-4 py-2 w-10"><input type="number" class="w-full border border-gray-300 rounded px-2 py-1" name="quantidade${contadorProduto}" value="0" min="0"></td>
+            <td class="px-4 py-2 w-40"><input type="text" class="w-full border border-gray-300 rounded px-2 py-1" name="preco${contadorProduto}" placeholder="0.00"></td>
+            <td class="px-4 py-2"><button type="button" class="text-red-600 font-bold border border-red-300 rounded px-4 py-1 h-[34px] hover:bg-red-100 transition btn-remover-produto">x</button></td>
         `;
 
         tbody.appendChild(novaLinha);
