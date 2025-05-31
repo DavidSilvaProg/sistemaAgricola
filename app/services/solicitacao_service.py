@@ -242,10 +242,10 @@ class SolicitacaoService:
     def incluirProdutosRecebidos(self, id, produtos):
         query = """
             INSERT INTO produtos_recebidos
-            (nome_produto, quantidade_produto, id_recebido, valor_produto)
-            VALUES (%s, %s, %s, %s)
+            (nome_produto, quantidade_produto, id_recebido, unidade_produto, valor_produto)
+            VALUES (%s, %s, %s, %s, %s)
         """
-        data = [(produto['produto'], produto['quantidade'], id, produto['preco']) for produto in produtos]
+        data = [(produto['produto'], produto['quantidade'], id,produto['unidade'], produto['preco']) for produto in produtos]
         self.db.execute(query, data, varios=True)
 
     def verificaRecebido(self, id):
@@ -321,6 +321,7 @@ class SolicitacaoService:
         query = """
             SELECT
                 id_produto,
+                unidade_produto,
                 nome_produto,
                 quantidade_produto,
                 valor_produto
