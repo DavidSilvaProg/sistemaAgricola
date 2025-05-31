@@ -89,9 +89,7 @@ function renderTabelaProdutos(produtos) {
 			<td class="px-4 py-3">${produto.estoque_produto}</td>
 			<td class="px-4 py-3">${produto.status_produto}</td>
 			<td class="px-4 py-3 text-center space-x-2">
-				<button onclick="verProduto('${produto.id_produto}')" class="text-blue-500 hover:text-blue-700">👁️</button>
-				<button onclick="editarProduto('${produto.id_produto}')" class="text-yellow-500 hover:text-yellow-700">✏️</button>
-				<button onclick="inativarProduto('${produto.id_produto}')" class="text-red-500 hover:text-red-700">🚫</button>
+				<button onclick="editarProduto('${produto.id_produto}')" class="text-blue-500 hover:text-blue-700">Editar</button>
 			</td>
 		`;
 		tbody.appendChild(tr);
@@ -145,3 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	aplicarFiltrosRemotos(true);
 });
+
+function editarProduto(id) {
+    window.location.href = `editarProduto/${id}`;
+}

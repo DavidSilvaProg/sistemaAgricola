@@ -331,8 +331,18 @@ class SolicitacaoService:
         """
         return self.db.execute(query, (id,),  fetch=True)
 
-
     def cadastrar_produto(self, produto):
+        # Verifica se já existe um produto com o mesmo nome
+        query_verificacao = """
+    		SELECT * FROM produtos WHERE nome_produto = %s
+    	"""
+        existente = self.db.execute(query_verificacao, (produto['nome_produto'],), fetch=True)
+
+        if existente:
+            flash("Já existe um produto com esse nome!", "error")
+            return render_template("cadastrarProduto.html", produto=produto)
+
+        # Caso não exista, segue com o cadastro
         hoje = date.today()
         query = """
     		INSERT INTO produtos (
@@ -357,15 +367,16 @@ class SolicitacaoService:
             produto['codigo_interno_produto'],
             produto['unidade_medida_produto'],
             produto['preco_unitario_produto'],
-            0, #produto['categoria_id'],
+            0,  # produto['categoria_id'] se usar depois
             produto['status_produto'],
-            hoje,  # data_cadastro_produto
+            hoje,
             produto['fabricante_produto'],
             produto['estoque_produto'],
             produto['estoque_minimo_produto']
         )
 
         self.db.execute(query, data)
+        flash("Produto cadastrado com sucesso!")
 
     def buscar_produtos(self, pagina=1, por_pagina=20, ocultar_inativos=False, busca=""):
         offset = (pagina - 1) * por_pagina
@@ -419,5 +430,64 @@ class SolicitacaoService:
         resultado = self.db.execute(query, parametros, fetch=True)
         return resultado[0]["total"] if resultado else 0
 
+    def buscar_produto_unico(self, id):
+        query = f"""
+    		SELECT
+    			id_produto,
+    			nome_produto,
+    			descricao_produto,
+    			codigo_interno_produto,
+    			unidade_medida_produto,
+    			preco_unitario_produto,
+    			estoque_produto,
+    			estoque_minimo_produto,
+    			status_produto,
+    			data_cadastro_produto,
+    			fabricante_produto
+    		FROM produtos
+    		WHERE id_produto = %s
+    	"""
+        return self.db.execute(query, (id,), fetch=True)
 
+    def editar_produto(self, produto, id):
+        query_verificacao = """
+    		SELECT * FROM produtos
+    		WHERE nome_produto = %s AND id_produto != %s
+    	"""
+        verificar = self.db.execute(query_verificacao, (
+            produto['nome_produto'], id
+        ), fetch=True)
 
+        if verificar:
+            flash("Já existe um produto com esse nome!", "error")
+            return render_template("cadastrarProduto.html", produto=produto)
+
+        query_update = """
+    		UPDATE produtos SET
+    			nome_produto = %s,
+    			descricao_produto = %s,
+    			codigo_interno_produto = %s,
+    			unidade_medida_produto = %s,
+    			preco_unitario_produto = %s,
+    			status_produto = %s,
+    			fabricante_produto = %s,
+    			estoque_produto = %s,
+    			estoque_minimo_produto = %s
+    		WHERE id_produto = %s
+    	"""
+
+        data = (
+            produto['nome_produto'],
+            produto['descricao_produto'],
+            produto['codigo_interno_produto'],
+            produto['unidade_medida_produto'],
+            produto['preco_unitario_produto'],
+            produto['status_produto'],
+            produto['fabricante_produto'],
+            produto['estoque_produto'],
+            produto['estoque_minimo_produto'],
+            id
+        )
+
+        self.db.execute(query_update, data)
+        flash("Produto editado com sucesso!")

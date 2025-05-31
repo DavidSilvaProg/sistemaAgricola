@@ -1,12 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Lista de Produtos{% endblock %}
-{% block scripts %}
-    <script src="{{ url_for('static', filename='js/produtos.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
-{% endblock %}
 {% block content %}
 	<div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-md p-6">
-		<h1 class="text-2xl font-bold mb-4">EM DESENVOLVIMENTO!</h1>
 		<h1 class="text-2xl font-bold mb-4">Produtos Cadastrados</h1>
 
 		<!-- Botão Nova Solicitação -->
@@ -73,9 +68,7 @@
 							<td class="px-4 py-3">{{ produto['estoque_produto'] }}</td>
 							<td class="px-4 py-3">{{ produto['status_produto'] }}</td>
 							<td class="px-4 py-3 text-center space-x-2">
-								<button title="Visualizar" onclick="verProduto('{{ produto['id_produto'] }}')" class="text-blue-500 hover:text-blue-700">👁️</button>
-								<button title="Editar" onclick="editarProduto('{{ produto['id_produto'] }}')" class="text-yellow-500 hover:text-yellow-700">✏️</button>
-								<button title="Inativar" onclick="inativarProduto('{{ produto['id_produto'] }}')" class="text-red-500 hover:text-red-700">🚫</button>
+								<button onclick="editarProduto({{ produto['id_produto'] }})" class="text-blue-500 hover:text-blue-700">Editar</button>
 							</td>
 						</tr>
 					{% endfor %}
@@ -96,6 +89,10 @@
 			</table>
 		</div>
 	</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/produtos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filtroTabelas.js') }}"></script>
 {% endblock %}
 
 

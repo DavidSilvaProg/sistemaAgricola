@@ -173,32 +173,27 @@ def produtos():
     return render_template('produtos.html')
 
 #PRODUTOS
-@bp_admin.route('/cadastroProduto')
+@bp_admin.route('/cadastroProduto', methods=['GET', 'POST'])
 @autenticacao_service.login_required
 @autenticacao_service.nivel_required('administrador')
 def cadastroProduto():
     #setores = solicitacao_service.buscar_setores()
-    return render_template('cadastroProduto.html', action_url=url_for('admin.cadastrarProduto'))
+    if request.method == "POST":
+        produto = {}
+        produto['nome_produto'] = request.form['nome_produto']
+        produto['descricao_produto'] = request.form['descricao_produto']
+        produto['codigo_interno_produto'] = request.form['codigo_interno_produto']
+        produto['unidade_medida_produto'] = request.form['unidade_medida_produto']
+        produto['preco_unitario_produto'] = request.form['preco_unitario_produto']
+        #produto['categoria_id'] = request.form['categoria_id']
+        produto['status_produto'] = request.form['status_produto']
+        produto['fabricante_produto'] = request.form['fabricante_produto']
+        produto['estoque_produto'] = request.form['estoque_produto']
+        produto['estoque_minimo_produto'] = request.form['estoque_minimo_produto']
 
-#Recebe as solicitação de compra do formulário e grava no banco
-@bp_admin.route('/cadastrarProduto', methods=['POST'])
-@autenticacao_service.login_required
-@autenticacao_service.nivel_required('administrador')
-def cadastrarProduto():
-    produto = {}
-    produto['nome_produto'] = request.form['nome_produto']
-    produto['descricao_produto'] = request.form['descricao_produto']
-    produto['codigo_interno_produto'] = request.form['codigo_interno_produto']
-    produto['unidade_medida_produto'] = request.form['unidade_medida_produto']
-    produto['preco_unitario_produto'] = request.form['preco_unitario_produto']
-    #produto['categoria_id'] = request.form['categoria_id']
-    produto['status_produto'] = request.form['status_produto']
-    produto['fabricante_produto'] = request.form['fabricante_produto']
-    produto['estoque_produto'] = request.form['estoque_produto']
-    produto['estoque_minimo_produto'] = request.form['estoque_minimo_produto']
+        solicitacao_service.cadastrar_produto(produto)
+    return render_template("cadastroProduto.html", produto=None, action_url=url_for('admin.cadastroProduto'))
 
-    solicitacao_service.cadastrar_produto(produto)
-    return redirect(url_for('admin.produtos'))
 
 @autenticacao_service.login_required
 @autenticacao_service.nivel_required('administrador')
@@ -222,4 +217,30 @@ def api_produtos():
 		"por_pagina": por_pagina
 	})
 
+@bp_admin.route('/editarProduto/<int:id>')
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def editarProduto(id):
+    produto_resultado = solicitacao_service.buscar_produto_unico(id)
+    produto = produto_resultado[0] if produto_resultado else None
+    return render_template('cadastroProduto.html', produto=produto, action_url=url_for('admin.gravaEditarProduto', id=id))
 
+@bp_admin.route('/gravaEditarProduto/<int:id>', methods=['POST'])
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def gravaEditarProduto(id):
+    if request.method == "POST":
+        produto = {}
+        produto['nome_produto'] = request.form['nome_produto']
+        produto['descricao_produto'] = request.form['descricao_produto']
+        produto['codigo_interno_produto'] = request.form['codigo_interno_produto']
+        produto['unidade_medida_produto'] = request.form['unidade_medida_produto']
+        produto['preco_unitario_produto'] = request.form['preco_unitario_produto']
+        # produto['categoria_id'] = request.form['categoria_id']
+        produto['status_produto'] = request.form['status_produto']
+        produto['fabricante_produto'] = request.form['fabricante_produto']
+        produto['estoque_produto'] = request.form['estoque_produto']
+        produto['estoque_minimo_produto'] = request.form['estoque_minimo_produto']
+
+        solicitacao_service.editar_produto(produto, id)
+    return render_template("cadastroProduto.html", produto = produto)
