@@ -34,7 +34,8 @@ def detalhesSolicitacao(id):
 @autenticacao_service.login_required
 def cadastroSolicitacao():
     setores = solicitacao_service.buscar_setores()
-    return render_template('cadastroSolicitacao.html', setores=setores)
+    produtos = solicitacao_service.buscar_produtos_basico()
+    return render_template('cadastroSolicitacao.html', produtos=produtos, setores=setores)
 
 #Recebe as solicitação de compra do formulário e grava no banco
 @bp_solicitacao.route('/cadastrarSolicitacao', methods=['POST'])

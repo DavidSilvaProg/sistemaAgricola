@@ -1,105 +1,97 @@
 let contador = 1;
 
+// Debounce para evitar múltiplas chamadas rápidas
+function debounce(func, delay = 300) {
+	let timer;
+	return (...args) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => func.apply(this, args), delay);
+	};
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    aplicarConversaoCampos(); // Aplica aos campos iniciais
+	aplicarConversaoCampos();
 });
 
-function adicionarInput() {
-	const contador = parseInt(getUltimoId()) + 1;
+function adicionarProdutoCadastrado() {
+	const input = document.getElementById('select-produto');
+	const valorDigitado = input.value.trim();
 
-	const container = document.createElement('div');
-	container.classList.add('mb-6');
+	if (!valorDigitado) return;
 
-	container.innerHTML = `
-		<div class="flex space-x-4 items-end">
-			<div class="flex-1 max-w-full">
-				<label for="produto${contador}" class="block text-sm font-medium text-gray-700 mb-1">Produto ${contador}:</label>
-				<input
-					type="text"
-					id="produto${contador}"
-					name="produto${contador}"
-					required
-					class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-				>
-			</div>
+	const produtoSelecionado = produtosMap[valorDigitado];
 
-			<div class="w-28">
-				<label for="unidade${contador}" class="block text-sm font-medium text-gray-700 mb-1">Unidade:</label>
-				<select
-					id="unidade${contador}"
-					name="unidade${contador}"
-					required
-					class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-				>
-					<option value="Unidade">Unidade</option>
-					<option value="Quilograma">Quilograma</option>
-					<option value="Grama">Grama</option>
-					<option value="Litro">Litro</option>
-					<option value="Mililitro">Mililitro</option>
-					<option value="Metro">Metro</option>
-					<option value="Centímetro">Centímetro</option>
-					<option value="Caixa">Caixa</option>
-					<option value="Pacote">Pacote</option>
-				</select>
-			</div>
-
-			<div class="w-20">
-				<label for="quantidade${contador}" class="block text-sm font-medium text-gray-700 mb-1">Qtd:</label>
-				<input
-					type="text"
-					id="quantidade${contador}"
-					name="quantidade${contador}"
-					required
-					min="1"
-					class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-				>
-			</div>
-		</div>
-
-		<div class="mt-2">
-			<button
-				type="button"
-				class="btn-remover text-red-600 text-sm hover:text-red-800"
-				onclick="removerInput(this)"
-				title="Remover produto"
-			>
-				❌ Remover
-			</button>
-		</div>
-	`;
-
-	document.getElementById('inputsContainer').appendChild(container);
-	aplicarConversaoCampos?.(); // Executa só se existir
-}
-
-
-
-function removerInput(botao) {
-	const grupo = botao.closest('div.mb-6'); // Pega o container externo que envolve tudo
-	if (grupo) {
-		grupo.remove();
+	if (!produtoSelecionado) {
+		alert('Selecione um produto válido da lista.');
+		return;
 	}
+
+	const nomeProduto = valorDigitado;
+	const unidade = produtoSelecionado.unidade;
+	const idProduto = produtoSelecionado.id;
+
+	inserirLinhaProduto(nomeProduto, unidade, '', idProduto);
+	input.value = ''; // Limpa o campo
 }
 
-function getUltimoId() {
-    const inputs = document.querySelectorAll('#inputsContainer input[type="text"]');
-    if (inputs.length > 0) {
-        const ultimoInput = inputs[inputs.length - 1];
-        const id = ultimoInput.id;
-        const numero = id.replace(/\D/g, ''); // Remove tudo que não for número
-        return numero;
-    }
-    return 1;
+function adicionarProdutoAvulso() {
+	inserirLinhaProduto('', '', '', '');
+}
+
+function inserirLinhaProduto(nome, unidade, quantidade, idProduto) {
+	contador++;
+	const tbody = document.getElementById('inputsContainer');
+
+	const linha = document.createElement('tr');
+	linha.classList.add('border-b');
+	linha.innerHTML = `
+		<td class="px-3 py-2 w-2/3">
+			<input type="hidden" name="id_produto${contador}" value="${idProduto}">
+			<input type="text" name="produto${contador}" value="${nome}" required
+				class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+		</td>
+		<td class="px-3 py-2 w-1/4">
+			<select name="unidade${contador}" required
+				class="w-full border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+				<option ${unidade === 'Unidade' ? 'selected' : ''}>Unidade</option>
+				<option ${unidade === 'Quilograma' ? 'selected' : ''}>Quilograma</option>
+				<option ${unidade === 'Grama' ? 'selected' : ''}>Grama</option>
+				<option ${unidade === 'Litro' ? 'selected' : ''}>Litro</option>
+				<option ${unidade === 'Mililitro' ? 'selected' : ''}>Mililitro</option>
+				<option ${unidade === 'Metro' ? 'selected' : ''}>Metro</option>
+				<option ${unidade === 'Centímetro' ? 'selected' : ''}>Centímetro</option>
+				<option ${unidade === 'Caixa' ? 'selected' : ''}>Caixa</option>
+				<option ${unidade === 'Pacote' ? 'selected' : ''}>Pacote</option>
+			</select>
+		</td>
+		<td class="px-3 py-2 w-1/6">
+			<input type="text" name="quantidade${contador}" value="${quantidade}" required
+				class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+		</td>
+		<td class="px-3 py-2">
+			<button type="button" onclick="removerLinha(this)"
+				class="text-red-600 text-sm hover:text-red-800 flex items-center gap-1">
+				❌ <span>Remover</span>
+			</button>
+		</td>
+	`;
+	tbody.appendChild(linha);
+
+	aplicarConversaoCampos?.();
+}
+
+function removerLinha(botao) {
+	const linha = botao.closest('tr');
+	if (linha) linha.remove();
 }
 
 function aplicarConversaoCampos() {
-    document.querySelectorAll("input[name^='quantidade']").forEach(campo => {
-        campo.removeEventListener('input', tratarVirgula); // Evita duplicação
-        campo.addEventListener('input', tratarVirgula);
-    });
+	document.querySelectorAll("input[name^='quantidade']").forEach(campo => {
+		campo.removeEventListener('input', tratarVirgula);
+		campo.addEventListener('input', debounce(tratarVirgula));
+	});
 }
 
 function tratarVirgula(event) {
-    const campo = event.target;
-    campo.value = campo.value.replace(",", ".");
+	event.target.value = event.target.value.replace(",", ".");
 }

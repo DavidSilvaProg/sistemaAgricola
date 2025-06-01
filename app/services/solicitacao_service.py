@@ -491,3 +491,16 @@ class SolicitacaoService:
 
         self.db.execute(query_update, data)
         flash("Produto editado com sucesso!")
+
+    def buscar_produtos_basico(self):
+        query = """
+                    SELECT
+                        id_produto,
+                        nome_produto,
+                        unidade_medida_produto
+                    FROM produtos
+                    WHERE status_produto = 'ativo'
+                    ORDER BY nome_produto ASC
+                """
+        return self.db.execute(query, fetch=True)
+
