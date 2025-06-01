@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 </head>
 <body>
     <div class="flex min-h-screen">
@@ -36,7 +37,7 @@
         </aside>
 
         <!-- Conteúdo principal -->
-        <main class="flex-1 bg-gray-100 p-6 overflow-auto w-full">
+        <main class="flex-1 bg-gray-100 p-6 overflow-visible w-full">
             <!-- Topo para botão toggle no mobile -->
             <div class="sm:hidden flex items-center justify-between mb-4">
                 <button onclick="toggleSidebar()" class="text-gray-700 text-2xl">☰</button>

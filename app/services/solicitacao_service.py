@@ -115,10 +115,10 @@ class SolicitacaoService:
     def incluirProdutos(self, id, produtos):
         query = """
             INSERT INTO produtos_solicitacao
-            (nome_produto, quantidade_produto, id_solicitacao, unidade_produto)
-            VALUES (%s, %s, %s, %s)
+            (nome_produto, quantidade_produto, id_solicitacao, unidade_produto, id_produto_cadastrado)
+            VALUES (%s, %s, %s, %s, %s)
         """
-        data = [(produto['produto'], produto['quantidade'], id, produto['unidade']) for produto in produtos]
+        data = [(produto['produto'], produto['quantidade'], id, produto['unidade'], produto['id_produto_cadastrado']) for produto in produtos]
         self.db.execute(query, data, varios=True)
 
     def buscar_usuarios(self, id=0, unica=False):

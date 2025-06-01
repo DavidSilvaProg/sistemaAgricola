@@ -41,19 +41,34 @@ def cadastroSolicitacao():
 @bp_solicitacao.route('/cadastrarSolicitacao', methods=['POST'])
 @autenticacao_service.login_required
 def cadastrarSolicitacao():
-    nome = request.form['nome']
-    setor = request.form['setor']
-    produtos = []
-    for chave, valor in request.form.items():
-        if chave.startswith('produto'):
-            numero = chave.replace('produto', '')
-            unidade = request.form.get(f'unidade{numero}')
-            quantidade = request.form.get(f'quantidade{numero}')
-            produtos.append({'produto': valor, 'quantidade': quantidade, 'unidade': unidade})
-    prioridade = request.form['prioridade']
-    id = session["user_id"]
-    solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade, id)
-    return redirect(url_for('solicitacao.cadastroSolicitacao'))
+	nome = request.form['nome']
+	setor = request.form['setor']
+	produtos = []
+
+	for chave, valor in request.form.items():
+		if chave.startswith('produto'):
+			numero = chave.replace('produto', '')
+
+			unidade = request.form.get(f'unidade{numero}')
+			quantidade = request.form.get(f'quantidade{numero}')
+			id_produto_cadastrado = request.form.get(f'id_produto{numero}')  # 👈 verifica se foi preenchido
+
+			# Se não vier nada, deixamos como None
+			if id_produto_cadastrado == '' or id_produto_cadastrado is None:
+				id_produto_cadastrado = None
+
+			produtos.append({
+				'produto': valor,
+				'quantidade': quantidade,
+				'unidade': unidade,
+				'id_produto_cadastrado': id_produto_cadastrado
+			})
+
+	prioridade = request.form['prioridade']
+	id_usuario = session["user_id"]
+	solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade, id_usuario)
+
+	return redirect(url_for('solicitacao.cadastroSolicitacao'))
 
 @bp_solicitacao.route('/setores')
 @autenticacao_service.login_required

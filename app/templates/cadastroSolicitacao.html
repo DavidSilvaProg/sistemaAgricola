@@ -3,7 +3,7 @@
 {% block content %}
 <div class="max-w-3xl mx-auto p-4 bg-white rounded-lg shadow">
 	<h2 class="text-2xl font-bold mb-4 text-gray-800">Solicitação de Compra</h2>
-
+	<div id="mensagem-erro" class="hidden bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm"></div>
 	<form id="requestForm" action="cadastrarSolicitacao" method="post" class="space-y-4">
 
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,51 +26,36 @@
 		</div>
 
 		<!-- Seleção de produto cadastrado -->
-		<div >
+		<div>
 			<h2 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">🛒 Itens</h2>
-			<label for="select-produto" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Produto Cadastrado:</label>
-
-			<div class="flex flex-col sm:flex-row gap-2">
+			<label for="produto-input" class="block text-sm font-medium text-gray-700 mb-1">Selecionar Produto Cadastrado:</label>
+			<div class="relative">
+			<!-- Input com ícone de lupa -->
+			<div class="flex items-center bg-white border border-gray-300 rounded px-3">
+				<i class="fas fa-search text-gray-400 mr-2"></i>
 				<input
 					type="text"
-					id="select-produto"
-					list="lista-produtos"
-					placeholder="Digite e selecione um produto"
-					class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-				>
+					id="produto-input"
+					class="w-full py-2 text-sm text-gray-700 focus:outline-none"
+					placeholder="Digite o nome do produto"
+					autocomplete="off"
+				/>
+			</div>
 
-				<datalist id="lista-produtos">
-					{% for produto in produtos %}
-						<option value="{{ produto.nome_produto }} ({{ produto.unidade_medida_produto }})" data-id="{{ produto.id_produto }}"></option>
-					{% endfor %}
-				</datalist>
-				<script>
-					// Dicionário de produtos: chave = nome formatado no input, valor = { id, unidade }
-					const produtosMap = {
-						{% for produto in produtos %}
-							"{{ produto.nome_produto }} ({{ produto.unidade_medida_produto }})": {
-								id: "{{ produto.id_produto }}",
-								unidade: "{{ produto.unidade_medida_produto }}"
-							}{% if not loop.last %},{% endif %}
-						{% endfor %}
-					};
-				</script>
-
-
-				<button
-					type="button"
-					onclick="adicionarProdutoCadastrado()"
-					class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 sm:px-8 py-2 rounded transition flex items-center gap-1"
-				>
-					➕ Adicionar
-				</button>
+			<!-- Autocomplete fixado com scroll -->
+			<div
+				id="autocomplete-container"
+				class="absolute z-10 mt-1 w-full bg-white border rounded shadow hidden"
+				style="max-height: 240px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;"
+			>
+				<ul id="autocomplete-list" class="text-sm"></ul>
 			</div>
 		</div>
-
+		</div>
 
 		<!-- Produtos adicionados -->
 		<div class="overflow-x-auto shadow rounded">
-			<table class="min-w-[500px] text-sm text-gray-700 mt-4 ">
+			<table class="min-w-[500px] text-sm text-gray-700 mt-4">
 				<thead>
 					<tr>
 						<th class="px-3 py-2 border-b text-left">Produto</th>
@@ -86,7 +71,6 @@
 		</div>
 
 		<!-- Botão para produto não cadastrado -->
-		<!-- Botão: Produto não cadastrado -->
 		<div class="flex justify-center pt-4">
 			<button
 				type="button"
@@ -96,7 +80,6 @@
 				<span>➕</span> Produto não cadastrado
 			</button>
 		</div>
-
 
 		<!-- Prioridade -->
 		<div>
@@ -121,5 +104,12 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+	window.produtos = [
+		{% for produto in produtos %}
+			{ nome: "{{ produto.nome_produto }}", id: "{{ produto.id_produto }}", unidade: "{{ produto.unidade_medida_produto }}" },
+		{% endfor %}
+	];
+</script>
 <script src="{{ url_for('static', filename='js/cadastroSolicitacao.js') }}"></script>
 {% endblock %}
