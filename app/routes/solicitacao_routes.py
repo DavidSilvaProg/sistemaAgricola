@@ -55,7 +55,7 @@ def cadastrarSolicitacao():
 
 			# Se não vier nada, deixamos como None
 			if id_produto_cadastrado == '' or id_produto_cadastrado is None:
-				id_produto_cadastrado = None
+				id_produto_cadastrado = 0
 
 			produtos.append({
 				'produto': valor,
@@ -63,7 +63,6 @@ def cadastrarSolicitacao():
 				'unidade': unidade,
 				'id_produto_cadastrado': id_produto_cadastrado
 			})
-
 	prioridade = request.form['prioridade']
 	id_usuario = session["user_id"]
 	solicitacao_service.incluirSolicitacao(nome, setor, produtos, prioridade, id_usuario)
