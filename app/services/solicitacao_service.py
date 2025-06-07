@@ -504,7 +504,7 @@ class SolicitacaoService:
                 """
         return self.db.execute(query, fetch=True)
 
-    def incluir_entrada_produto(self, id_produto, quantidade, observacao, id_usuario):
+    def movimentacao_produto(self, id_produto, quantidade, observacao, id_usuario, opcao):
         # Verifica se o produto existe
         query_verificacao = """
     		SELECT estoque_produto FROM produtos WHERE id_produto = %s
@@ -522,16 +522,17 @@ class SolicitacaoService:
     				quantidade,
     				data_movimentacao,
     				observacao,
-    				id_usuario
+    				id_usuario,
+    				opcao_movimentacao
     			)
-    			VALUES (%s, 'entrada', %s, %s, %s, %s)
+    			VALUES (%s, 'entrada', %s, %s, %s, %s, %s)
     		"""
             agora = datetime.now()
-            dados = (id_produto, quantidade, agora, observacao, id_usuario)
+            dados = (id_produto, quantidade, agora, observacao, id_usuario, opcao)
             self.db.execute(query, dados)
 
             # Atualiza o estoque
-            self.atualiza_estoque(id_produto, estoque_atual, quantidade, 'entrada')
+            self.atualiza_estoque(id_produto, estoque_atual, quantidade, opcao)
 
             flash("✅ Entrada registrada com sucesso!")
         else:

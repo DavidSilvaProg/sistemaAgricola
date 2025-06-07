@@ -261,5 +261,5 @@ def gravarEntradaProduto():
 	descricao = request.form.get('descricao', '') or request.form.get('observacao', '')  # cobre ambos nomes
 	id_usuario = session["user_id"]
 
-	solicitacao_service.incluir_entrada_produto(id_produto, quantidade, descricao, id_usuario)
+	solicitacao_service.movimentacao_produto(id_produto, quantidade, descricao, id_usuario, 'entrada')
 	return redirect(url_for('admin.entradaProduto'))
