@@ -95,3 +95,22 @@ def api_solicitacoes():
     )[::-1]
 
     return jsonify(resultado)
+
+@bp_solicitacao.route('/saidaProduto')
+@autenticacao_service.login_required
+def saidaProduto():
+    setores = solicitacao_service.buscar_setores()
+    produtos = solicitacao_service.buscar_produtos_basico()
+    return render_template('saidaProduto.html', produtos=produtos, setores=setores)
+
+@bp_solicitacao.route('/gravarSaidaProduto', methods=['POST'])
+@autenticacao_service.login_required
+def gravarSaidaProduto():
+	id_produto = int(request.form['id_produto'])
+	quantidade = float(request.form['quantidade'].replace(',', '.'))  # garante compatibilidade com vírgula
+	descricao = request.form.get('descricao', '') or request.form.get('observacao', '')  # cobre ambos nomes
+	id_usuario = session["user_id"]
+	setor = request.form["setor"]
+
+	solicitacao_service.movimentacao_produto(id_produto, quantidade, descricao, id_usuario, 'Saída', setor)
+	return redirect(url_for('solicitacao.saidaProduto'))

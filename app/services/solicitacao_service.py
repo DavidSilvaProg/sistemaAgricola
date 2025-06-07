@@ -504,7 +504,7 @@ class SolicitacaoService:
                 """
         return self.db.execute(query, fetch=True)
 
-    def movimentacao_produto(self, id_produto, quantidade, observacao, id_usuario, opcao):
+    def movimentacao_produto(self, id_produto, quantidade, observacao, id_usuario, opcao, setor=''):
         # Verifica se o produto existe
         query_verificacao = """
     		SELECT estoque_produto FROM produtos WHERE id_produto = %s
@@ -512,6 +512,8 @@ class SolicitacaoService:
         existente = self.db.execute(query_verificacao, (id_produto,), fetch=True)
 
         if existente:
+            if setor == '':
+                setor = 0
             estoque_atual = existente[0]['estoque_produto']
 
             # Grava a movimentação do tipo 'entrada'
@@ -523,25 +525,25 @@ class SolicitacaoService:
     				data_movimentacao,
     				observacao,
     				id_usuario,
-    				opcao_movimentacao
+    				id_setor
     			)
-    			VALUES (%s, 'entrada', %s, %s, %s, %s, %s)
+    			VALUES (%s, %s, %s, %s, %s, %s, %s)
     		"""
             agora = datetime.now()
-            dados = (id_produto, quantidade, agora, observacao, id_usuario, opcao)
+            dados = (id_produto, opcao, quantidade, agora, observacao, id_usuario, setor)
             self.db.execute(query, dados)
 
             # Atualiza o estoque
             self.atualiza_estoque(id_produto, estoque_atual, quantidade, opcao)
 
-            flash("✅ Entrada registrada com sucesso!")
+            flash("✅ Registrado com sucesso!")
         else:
             flash("❌ Erro: Produto não encontrado!")
 
     def atualiza_estoque(self, id_produto, estoque_produto, quantidade, opcao):
-        if opcao == 'entrada':
+        if opcao == 'Entrada':
             total = estoque_produto + quantidade
-        elif opcao == 'saida':
+        elif opcao == 'Saída':
             total = estoque_produto - quantidade
         else:
             flash("❌ Operação inválida.")
