@@ -278,8 +278,10 @@ def api_movimentacao_produtos():
 	pagina = int(request.args.get("page", 1))
 	por_pagina = int(request.args.get("per_page", 10))
 	busca = request.args.get("busca", "").lower()
+	data_inicio = request.args.get("data_inicio")
+	data_fim = request.args.get("data_fim")
 
-	movimentacoes = solicitacao_service.buscar_movimentacao_produtos(pagina, por_pagina, busca)
+	movimentacoes = solicitacao_service.buscar_movimentacao_produtos(pagina, por_pagina, busca, data_inicio, data_fim)
 	total = solicitacao_service.contar_total_movimentacoes(busca)
 
 	# Garante retorno com apenas os campos desejados
@@ -299,6 +301,7 @@ def api_movimentacao_produtos():
 		"pagina": pagina,
 		"por_pagina": por_pagina
 	})
+
 
 @bp_admin.route('/api/movimentacaoDetalhes/<int:id>')
 @autenticacao_service.login_required

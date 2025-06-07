@@ -27,8 +27,12 @@ async function aplicarFiltrosRemotos(reset = false) {
 		document.getElementById("product-table-body").innerHTML = "";
 		document.getElementById("spinner-linha")?.classList.remove("hidden");
 	}
+    const dataInicio = document.getElementById("dataInicio").value;
+    const dataFim = document.getElementById("dataFim").value;
 
-	const url = `/api/movimentacaoProdutos?page=${paginaAtual}&per_page=${porPagina}&busca=${encodeURIComponent(textoBusca)}`;
+    const url = `/api/movimentacaoProdutos?page=${paginaAtual}&per_page=${porPagina}&busca=${encodeURIComponent(textoBusca)}`
+        + (dataInicio ? `&data_inicio=${dataInicio}` : "")
+        + (dataFim ? `&data_fim=${dataFim}` : "");
 
 	carregando = true;
 	document.getElementById("spinner").classList.remove("hidden");

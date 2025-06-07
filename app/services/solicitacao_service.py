@@ -554,7 +554,7 @@ class SolicitacaoService:
     	"""
         self.db.execute(query_update, (total, id_produto))
 
-    def buscar_movimentacao_produtos(self, pagina=1, por_pagina=20, busca=""):
+    def buscar_movimentacao_produtos(self, pagina=1, por_pagina=20, busca="", data_inicio=None, data_fim=None):
         offset = (pagina - 1) * por_pagina
 
         condicoes = []
@@ -567,6 +567,16 @@ class SolicitacaoService:
     			LOWER(m.observacao) LIKE %s)
     		""")
             parametros += [f"%{busca.lower()}%", f"%{busca.lower()}%", f"%{busca.lower()}%"]
+
+        if data_inicio and data_fim:
+            condicoes.append("DATE(m.data_movimentacao) BETWEEN %s AND %s")
+            parametros += [data_inicio, data_fim]
+        elif data_inicio:
+            condicoes.append("DATE(m.data_movimentacao) >= %s")
+            parametros.append(data_inicio)
+        elif data_fim:
+            condicoes.append("DATE(m.data_movimentacao) <= %s")
+            parametros.append(data_fim)
 
         where_clause = "WHERE " + " AND ".join(condicoes) if condicoes else ""
 
