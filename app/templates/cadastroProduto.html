@@ -68,7 +68,16 @@
 
             <div>
                 <label for="estoque_produto" class="block text-sm font-medium text-gray-700 mb-1">Estoque:</label>
-                <input type="text" name="estoque_produto" id="estoque_produto" value="{{ produto.estoque_produto if produto else '' }}" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input
+                    type="text"
+                    name="estoque_produto"
+                    id="estoque_produto"
+                    value="{{ produto.estoque_produto if produto else '' }}"
+                    {% if produto and produto.id_produto %}
+                        disabled
+                    {% endif %}
+                    class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
             </div>
 
             <div>

@@ -29,16 +29,22 @@ document.querySelectorAll('th.ordenavel').forEach(th => {
 
 		// Ordenar as linhas visíveis com base na coluna clicada
 		linhas.sort((a, b) => {
-			const aTexto = a.cells[coluna]?.innerText.trim().toLowerCase() || '';
-			const bTexto = b.cells[coluna]?.innerText.trim().toLowerCase() || '';
+            let aTexto = a.cells[coluna]?.textContent.trim() || '';
+            let bTexto = b.cells[coluna]?.textContent.trim() || '';
 
-			const valorA = parseValor(aTexto);
-			const valorB = parseValor(bTexto);
+            // Se for a coluna Produto (índice 1), removemos "produto" do início para melhorar a ordenação
+            if (coluna === 1) {
+                aTexto = aTexto.replace(/^produto\s*/i, '').padStart(10, '0'); // "Produto 5" vira "0000000005"
+                bTexto = bTexto.replace(/^produto\s*/i, '').padStart(10, '0');
+            }
 
-			if (valorA < valorB) return asc ? -1 : 1;
-			if (valorA > valorB) return asc ? 1 : -1;
-			return 0;
-		});
+            const valorA = parseValor(aTexto);
+            const valorB = parseValor(bTexto);
+
+            if (valorA < valorB) return asc ? -1 : 1;
+            if (valorA > valorB) return asc ? 1 : -1;
+            return 0;
+        });
 
 		// Remove todas as linhas do tbody (inclusive travadas) e reaplica ordenação limpa
 		const todasLinhas = Array.from(tbody.rows);
@@ -49,27 +55,33 @@ document.querySelectorAll('th.ordenavel').forEach(th => {
 
 // Função para tentar interpretar como número, data ou string
 function parseValor(valor) {
-	// Remove espaços e troca vírgula por ponto
-	const texto = valor.trim().replace(',', '.');
+	// Normaliza texto: remove espaços, acentos e troca vírgula por ponto
+	const texto = valor.trim()
+		.replace(',', ' ') // troca vírgula entre data e hora por espaço
+		.replace(/\s+/g, ' ') // normaliza múltiplos espaços
+		.replace(/\u200B/g, '') // remove caracteres invisíveis
+		.normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove acentos
+		.toLowerCase();
 
-	// Verifica se é número real ou inteiro
+	// Verifica se é número (inteiro ou decimal)
 	if (/^-?\d+(\.\d+)?$/.test(texto)) {
 		return parseFloat(texto);
 	}
 
-	// Tenta reconhecer data no formato BR (dd/mm/yyyy)
-	const dataBR = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+	// Verifica se é data BR com ou sem hora (dd/mm/yyyy ou dd/mm/yyyy HH:mm:ss)
+	const dataBR = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
 	if (dataBR) {
-		return new Date(`${dataBR[3]}-${dataBR[2]}-${dataBR[1]}`).getTime();
+		const [ , dia, mes, ano, hora = '00', min = '00', seg = '00' ] = dataBR;
+		return new Date(`${ano}-${mes}-${dia}T${hora}:${min}:${seg}`).getTime();
 	}
 
-	// Tenta reconhecer ISO ou outro formato válido de data
+	// Tenta interpretar como data ISO (fallback)
 	const dataISO = Date.parse(texto);
 	if (!isNaN(dataISO)) {
 		return dataISO;
 	}
 
-	// Por fim, retorna como texto
+	// Se não for número nem data, retorna como texto sem acento
 	return texto.toLowerCase();
 }
 

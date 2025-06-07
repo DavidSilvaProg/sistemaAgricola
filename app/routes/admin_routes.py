@@ -165,7 +165,7 @@ def api_recebidos():
     dados = solicitacao_service.buscarSolicitacoesRecebidas(data_inicio=data_inicio, data_fim=data_fim)
     return jsonify(dados)
 
-#Página de solicitações de compra
+#Página lista de produtos
 @bp_admin.route('/produtos')
 @autenticacao_service.login_required
 @autenticacao_service.nivel_required('administrador')
@@ -263,3 +263,46 @@ def gravarEntradaProduto():
 
 	solicitacao_service.movimentacao_produto(id_produto, quantidade, descricao, id_usuario, 'Entrada')
 	return redirect(url_for('admin.entradaProduto'))
+
+#Página lista de produtos
+@bp_admin.route('/movimentacaoProdutos')
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def movimentacaoProdutos():
+    return render_template('movimentacaoProdutos.html')
+
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+@bp_admin.route('/api/movimentacaoProdutos')
+def api_movimentacao_produtos():
+	pagina = int(request.args.get("page", 1))
+	por_pagina = int(request.args.get("per_page", 10))
+	busca = request.args.get("busca", "").lower()
+
+	movimentacoes = solicitacao_service.buscar_movimentacao_produtos(pagina, por_pagina, busca)
+	total = solicitacao_service.contar_total_movimentacoes(busca)
+
+	# Garante retorno com apenas os campos desejados
+	movimentacoes_formatadas = [{
+		"id_movimentacao": m["id_movimentacao"],
+		"nome_produto": m["nome_produto"],
+		"tipo_movimentacao": m["tipo_movimentacao"],
+		"quantidade": m["quantidade"],
+		"data_movimentacao": m["data_movimentacao"].strftime("%Y-%m-%d %H:%M:%S"),
+		"nome_setor": m.get("nome_setor") or "—",
+		"nome_usuario": m.get("nome_usuario") or "—"
+	} for m in movimentacoes]
+
+	return jsonify({
+		"movimentacoes": movimentacoes_formatadas,
+		"total": total,
+		"pagina": pagina,
+		"por_pagina": por_pagina
+	})
+
+@bp_admin.route('/api/movimentacaoDetalhes/<int:id>')
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def api_detalhes_movimentacao(id):
+	resultado = solicitacao_service.detalhes_movimentacao_produto(id)
+	return jsonify(resultado or {})

@@ -383,7 +383,6 @@ class SolicitacaoService:
 
         condicoes = []
         parametros = []
-        print(f"Mostra inativos: {ocultar_inativos}")
         if ocultar_inativos:
             condicoes.append("LOWER(status_produto) != 'inativo'")
 
@@ -548,10 +547,93 @@ class SolicitacaoService:
         else:
             flash("❌ Operação inválida.")
             return
-        print(total)
         query_update = """
     		UPDATE produtos
     		SET estoque_produto = %s
     		WHERE id_produto = %s
     	"""
         self.db.execute(query_update, (total, id_produto))
+
+    def buscar_movimentacao_produtos(self, pagina=1, por_pagina=20, busca=""):
+        offset = (pagina - 1) * por_pagina
+
+        condicoes = []
+        parametros = []
+
+        if busca:
+            condicoes.append("""
+    			(LOWER(p.nome_produto) LIKE %s OR
+    			LOWER(m.tipo_movimentacao) LIKE %s OR
+    			LOWER(m.observacao) LIKE %s)
+    		""")
+            parametros += [f"%{busca.lower()}%", f"%{busca.lower()}%", f"%{busca.lower()}%"]
+
+        where_clause = "WHERE " + " AND ".join(condicoes) if condicoes else ""
+
+        query = f"""
+    		SELECT
+    			m.id_movimentacao,
+    			m.id_produto,
+    			p.nome_produto,
+    			m.tipo_movimentacao,
+    			m.quantidade,
+    			m.data_movimentacao,
+    			m.observacao,
+    			m.id_setor,
+    			s.nome_setor,
+    			u.nome_usuario
+    		FROM movimentacoes_estoque m
+    		LEFT JOIN produtos p ON m.id_produto = p.id_produto
+    		LEFT JOIN setores s ON m.id_setor = s.id_setor
+    		LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario
+    		{where_clause}
+    		ORDER BY m.data_movimentacao DESC
+    		LIMIT %s OFFSET %s
+    	"""
+        parametros += [por_pagina, offset]
+        return self.db.execute(query, parametros, fetch=True)
+
+    def contar_total_movimentacoes(self, busca=""):
+        condicoes = []
+        parametros = []
+
+        if busca:
+            condicoes.append("""
+    			(LOWER(p.nome_produto) LIKE %s OR
+    			LOWER(m.tipo_movimentacao) LIKE %s OR
+    			LOWER(m.observacao) LIKE %s)
+    		""")
+            parametros += [f"%{busca.lower()}%", f"%{busca.lower()}%", f"%{busca.lower()}%"]
+
+        where_clause = "WHERE " + " AND ".join(condicoes) if condicoes else ""
+
+        query = f"""
+    		SELECT COUNT(*) AS total
+    		FROM movimentacoes_estoque m
+    		LEFT JOIN produtos p ON m.id_produto = p.id_produto
+    		{where_clause}
+    	"""
+
+        resultado = self.db.execute(query, parametros, fetch=True)
+        return resultado[0]["total"] if resultado else 0
+
+    def detalhes_movimentacao_produto(self, id):
+        print(id)
+        query = """
+    		SELECT
+    			m.id_movimentacao,
+    			p.nome_produto,
+    			m.tipo_movimentacao,
+    			m.quantidade,
+    			m.data_movimentacao,
+    			m.observacao,
+    			s.nome_setor,
+    			u.nome_usuario
+    		FROM movimentacoes_estoque m
+    		LEFT JOIN produtos p ON m.id_produto = p.id_produto
+    		LEFT JOIN setores s ON m.id_setor = s.id_setor
+    		LEFT JOIN usuarios u ON m.id_usuario = u.id_usuario
+    		WHERE m.id_movimentacao = %s
+    	"""
+        resultado = self.db.execute(query, (id,), fetch=True)
+        return resultado[0] if resultado else None

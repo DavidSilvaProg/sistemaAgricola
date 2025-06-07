@@ -22,12 +22,13 @@
             <!-- Menu alinhado à esquerda -->
             <nav class="flex flex-col w-full text-sm font-medium space-y-2">
                 <a href="/solicitacoesCompra" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Pedidos</a>
-
+                {% if session.nivel == 'usuario' %}
+                    <a href="/saidaProduto" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Saída Produto</a>
+                {% endif %}
                 {% if session.nivel == 'administrador' %}
                     <a href="/solicitacoesRecebidas" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Recebidos</a>
                     <a href="/produtos" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Produtos</a>
-                    <a href="/entradaProduto" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Entrada Produto</a>
-                    <a href="/saidaProduto" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Saída Produto</a>
+                    <a href="/movimentacaoProdutos" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Movimentação Produtos</a>
                     <a href="/usuarios" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Usuários</a>
                     <a href="/setores" class="text-left hover:bg-gray-700 px-4 py-2 rounded w-full">Setores</a>
                 {% endif %}
