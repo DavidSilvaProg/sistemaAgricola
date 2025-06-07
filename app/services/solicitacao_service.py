@@ -504,3 +504,51 @@ class SolicitacaoService:
                 """
         return self.db.execute(query, fetch=True)
 
+    def incluir_entrada_produto(self, id_produto, quantidade, observacao, id_usuario):
+        # Verifica se o produto existe
+        query_verificacao = """
+    		SELECT estoque_produto FROM produtos WHERE id_produto = %s
+    	"""
+        existente = self.db.execute(query_verificacao, (id_produto,), fetch=True)
+
+        if existente:
+            estoque_atual = existente[0]['estoque_produto']
+
+            # Grava a movimentação do tipo 'entrada'
+            query = """
+    			INSERT INTO movimentacoes_estoque (
+    				id_produto,
+    				tipo_movimentacao,
+    				quantidade,
+    				data_movimentacao,
+    				observacao,
+    				id_usuario
+    			)
+    			VALUES (%s, 'entrada', %s, %s, %s, %s)
+    		"""
+            agora = datetime.now()
+            dados = (id_produto, quantidade, agora, observacao, id_usuario)
+            self.db.execute(query, dados)
+
+            # Atualiza o estoque
+            self.atualiza_estoque(id_produto, estoque_atual, quantidade, 'entrada')
+
+            flash("✅ Entrada registrada com sucesso!")
+        else:
+            flash("❌ Erro: Produto não encontrado!")
+
+    def atualiza_estoque(self, id_produto, estoque_produto, quantidade, opcao):
+        if opcao == 'entrada':
+            total = estoque_produto + quantidade
+        elif opcao == 'saida':
+            total = estoque_produto - quantidade
+        else:
+            flash("❌ Operação inválida.")
+            return
+        print(total)
+        query_update = """
+    		UPDATE produtos
+    		SET estoque_produto = %s
+    		WHERE id_produto = %s
+    	"""
+        self.db.execute(query_update, (total, id_produto))

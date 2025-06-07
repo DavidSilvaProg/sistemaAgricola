@@ -244,3 +244,22 @@ def gravaEditarProduto(id):
 
         solicitacao_service.editar_produto(produto, id)
     return render_template("cadastroProduto.html", produto = produto)
+
+@bp_admin.route('/entradaProduto')
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def entradaProduto():
+    produtos = solicitacao_service.buscar_produtos_basico()
+    return render_template('entradaProduto.html', produtos=produtos)
+
+@bp_admin.route('/gravarEntradaProduto', methods=['POST'])
+@autenticacao_service.login_required
+@autenticacao_service.nivel_required('administrador')
+def gravarEntradaProduto():
+	id_produto = int(request.form['id_produto'])
+	quantidade = float(request.form['quantidade'].replace(',', '.'))  # garante compatibilidade com vírgula
+	descricao = request.form.get('descricao', '') or request.form.get('observacao', '')  # cobre ambos nomes
+	id_usuario = session["user_id"]
+
+	solicitacao_service.incluir_entrada_produto(id_produto, quantidade, descricao, id_usuario)
+	return redirect(url_for('admin.entradaProduto'))
