@@ -470,8 +470,8 @@ class SolicitacaoService:
     			preco_unitario_produto = %s,
     			status_produto = %s,
     			fabricante_produto = %s,
-    			estoque_produto = %s,
-    			estoque_minimo_produto = %s
+    			estoque_minimo_produto = %s,
+    			data_atualizacao_produto = %s
     		WHERE id_produto = %s
     	"""
 
@@ -483,8 +483,8 @@ class SolicitacaoService:
             produto['preco_unitario_produto'],
             produto['status_produto'],
             produto['fabricante_produto'],
-            produto['estoque_produto'],
             produto['estoque_minimo_produto'],
+            datetime.now(),
             id
         )
 

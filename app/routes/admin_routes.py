@@ -239,7 +239,7 @@ def gravaEditarProduto(id):
         # produto['categoria_id'] = request.form['categoria_id']
         produto['status_produto'] = request.form['status_produto']
         produto['fabricante_produto'] = request.form['fabricante_produto']
-        produto['estoque_produto'] = request.form['estoque_produto']
+        # produto['estoque_produto'] = request.form['estoque_produto']
         produto['estoque_minimo_produto'] = request.form['estoque_minimo_produto']
 
         solicitacao_service.editar_produto(produto, id)
